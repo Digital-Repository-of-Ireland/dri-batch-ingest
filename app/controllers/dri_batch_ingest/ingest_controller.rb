@@ -1,0 +1,109 @@
+require 'avalon/batch'
+require 'dri_batch_ingest/processors/entry_processor'
+require 'dri_batch_ingest/csv_creator'
+
+class DriBatchIngest::IngestController < ApplicationController
+  before_action :authenticate_user!
+
+  def base_dir
+    @base_dir || set_base_dir
+  end
+
+  def index
+  end
+
+  def new
+    # begin
+    #   response = RestClient::Request.execute(method: :get, url: collection_url,
+    #                         content_type: :json, accept: :json, timeout: 30)
+    # rescue => e
+    #   flash[:error] = e
+    # end
+
+    @collections = [] #if response && response.code == 200
+                     #JSON.parse(response.body).values.flatten.collect{ |c| [c['collection_title'].first, c['id']] }
+                   #else
+                   #  []
+                   #end
+
+    Dir.chdir(base_dir){ @user_dirs = directory_hash('.')[:children] }
+  end
+
+  def show
+    @batch = DriBatchIngest::IngestBatch.find(params[:id])
+
+    @media_objects = if params[:status]
+                       @batch.media_objects.status(params[:status]).page params[:page]
+                     else 
+                       @batch.media_objects.page params[:page]
+                     end
+  end
+
+  def create
+    collection = params[:collection]
+    ingest = DriBatchIngest::UserIngest.create(user_id: current_user.id)
+
+    if params[:type].present? && params[:type] == 'manifest'
+      Resque.enqueue(ProcessManifest, ingest.id, collection, params['selected_files'], provider_tokens)
+    else
+      metadata_path = params[:metadata_path]
+      asset_path = params[:asset_path]
+      preservation_path = params[:preservation_path]
+          
+      Resque.enqueue(CreateManifest, ingest.id, base_dir, current_user.email, collection, metadata_path, asset_path, preservation_path)
+    end
+    
+    redirect_to ingests_url(ingest)
+  end
+
+  def update
+    @batch = DriBatchIngest::IngestBatch.find(params[:id])
+
+    media_object_ids = @batch.media_objects.status('FAILED').pluck(:id)
+    Resque.enqueue(ProcessBatch, @batch.id, media_object_ids)
+  
+    redirect_to ingests_url
+  end
+
+  private
+
+  def collection_url
+    "#{Settings.dri.endpoint}/collections?user_email=#{current_user.email}&user_token=#{current_user.authentication_token}"
+  end
+
+  def directory_hash(path, name=nil, exclude = [])                                
+    exclude.concat(['..', '.', '.git', '__MACOSX', '.DS_Store'])
+    key = (name || path)              
+    data = { name: key, type: 'folder', path: path }                                             
+    data[:children] = []                                               
+    Dir.foreach(path) do |entry|                                                  
+      next if exclude.include?(entry)   
+      full_path = path == '.' ? entry : File.join(path, entry)
+
+      if File.directory?(full_path)                                               
+        data[:children] << directory_hash(full_path, entry)                              
+      end                                                                         
+    end                                                                           
+  
+    data                                                                   
+  end
+
+  def provider_tokens
+    tokens = {}
+    browser = BrowseEverything::Browser.new
+    browser.providers.values.each do |p|
+      tokens["#{p.key}_token"] = session["#{p.key}_token"] if session["#{p.key}_token"].present?
+    end
+
+    tokens
+  end
+
+  def set_base_dir
+    url_options = BrowseEverything.config
+    url_options[:current_user] = current_user.email
+
+    browser = BrowseEverything::Browser.new(url_options)
+    browser.providers['file_system'].home
+  end
+
+end

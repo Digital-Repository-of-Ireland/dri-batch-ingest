@@ -1,0 +1,29 @@
+<div>
+  <h1>New batch ingest</h1>
+</div>
+
+<div style="margin-bottom:10px">
+  <a class="btn btn-primary" href="#" id="existing"><i class="fa fa-upload"></i> Use existing manifest</a>
+  <a class="btn btn-primary" href="#" id="create"><i class="fa fa-wrench"></i> Create manifest from files</a>
+</div>
+
+<div id="existing_manifest" style="display:none">
+  <%= render partial: 'form_manifest' %>
+</div>
+
+<div id="create_manifest" style="display:none">
+  <%= render partial: 'form_create' %>
+</div>
+
+<script>
+$("#existing").click(function() {
+  $("#create_manifest").hide();
+  $("#existing_manifest").toggle();
+});
+
+$("#create").click(function() {
+  $("#existing_manifest").hide();
+  $("#create_manifest").toggle();
+});
+</script>
+

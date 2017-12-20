@@ -1,5 +1,5 @@
-module DRI
-  module BatchIngest
-    require 'dri/batch_ingest/engine' if defined?(Rails)
-  end
+module DriBatchIngest
+  require 'dri_batch_ingest/engine'
+  require 'dri_batch_ingest/version'
+  require 'dri_batch_ingest'
 end

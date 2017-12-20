@@ -2,12 +2,12 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 # Maintain your gem's version:
-require "dri/batch_ingest/version"
+require "dri_batch_ingest/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "dri_batch_ingest"
-  s.version     = DRI::BatchIngest::VERSION
+  s.version     = DriBatchIngest::VERSION
   s.authors     = ["Stuart Kenny"]
   s.email       = ["skenny@tchpc.tcd.ie"]
   s.homepage    = "https://github.com/Digital-Repository-of-Ireland/dri_batch_ingest"
@@ -19,6 +19,11 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency "rails", "~> 4.2.10"
+  s.add_dependency 'kaminari'
+  s.add_dependency 'fuelux-rails-sass'
+  s.add_dependency 'underscore-rails'
+  s.add_dependency 'iconv'
+  s.add_dependency 'filesize'
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rspec-rails"

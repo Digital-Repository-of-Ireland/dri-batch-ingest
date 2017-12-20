@@ -1,0 +1,13 @@
+<h4>Collection for ingest</h4>
+<%= label_tag 'collection', 'Collection ID' %>
+ <div class="input-group input-append dropdown combobox" data-initialize="combobox" id="collectionCombobox">
+  <input type="text" class="form-control">
+  <div class="input-group-btn">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+    <ul class="dropdown-menu dropdown-menu-right">
+      <% @collections.each do |c| %>
+        <li data-value="<%= c[1] %>"><a href="#"><%= "#{c[1]} [#{c[0]}]" %></a></li>
+      <% end %>
+    </ul>
+  </div>
+</div>
