@@ -1,6 +1,6 @@
 class CreateTableMasterFiles < ActiveRecord::Migration
   def change
-    create_table :batch_ingest_master_files do |t|
+    create_table :dri_batch_ingest_master_files do |t|
       t.references :media_object, index: true
       t.string :status_code
       t.string :file_size
@@ -10,6 +10,6 @@ class CreateTableMasterFiles < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    add_foreign_key :batch_ingest_master_files, :batch_ingest_media_objects, column: :media_object_id
+    add_foreign_key :dri_batch_ingest_master_files, :dri_batch_ingest_media_objects, column: :media_object_id
   end
 end

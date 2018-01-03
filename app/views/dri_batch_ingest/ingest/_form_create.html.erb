@@ -29,7 +29,7 @@
     </div>
     <div class="step-content">
       <div class="step-pane active alert" data-step="1">
-        <%= form_tag('/batch', id: 'main_form', method: 'post') do %>
+        <%= form_tag(batch_ingest_path, id: 'main_form', method: 'post') do %>
           <%= hidden_field_tag 'metadata_path' %>
           <%= hidden_field_tag 'asset_path' %>
           <%= hidden_field_tag 'preservation_path' %>

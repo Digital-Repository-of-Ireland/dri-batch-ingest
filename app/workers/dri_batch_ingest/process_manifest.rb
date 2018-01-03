@@ -1,4 +1,5 @@
 require 'avalon/batch'
+require 'dri_batch_ingest/processors'
 
 class DriBatchIngest::ProcessManifest
   @queue = :process_manifest
@@ -16,7 +17,7 @@ class DriBatchIngest::ProcessManifest
       package = Avalon::Batch::Package.new(
         manifest,
         collection,
-        BulkIngester::Processors::EntryProcessor
+        DriBatchIngest::Processors::EntryProcessor
       )
 
       batch = DriBatchIngest::IngestBatch.create(collection_id: collection, email: package.manifest.email, user_ingest_id: ingest.id)
@@ -26,7 +27,7 @@ class DriBatchIngest::ProcessManifest
       
       ingest.batches << batch
 
-      Resque.enqueue(ProcessBatch, batch.id)
+      Resque.enqueue(DriBatchIngest::ProcessBatch, batch.id)
     end
 
     ingest.save

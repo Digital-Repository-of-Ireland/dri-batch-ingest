@@ -21,7 +21,7 @@
     </div>
     <div class="step-content">
       <div class="step-pane active alert" data-step="1">
-        <%= form_tag('/batch', id: 'manifest_form', method: 'post') do %>
+        <%= form_tag('/ingest/batch', id: 'manifest_form', method: 'post') do %>
           <%= hidden_field_tag 'type', 'manifest' %>
           <%= hidden_field_tag 'collection' %>
 

@@ -4,7 +4,7 @@ class DriBatchIngest::CreateManifest
   @queue = :create_manifest
   
   def self.perform(ingest_id, base_dir, email, collection, metadata_path, asset_path, preservation_path)
-    creator = CsvCreator.new(
+    creator = DriBatchIngest::CsvCreator.new(
       base_dir,
       email,
       collection,
@@ -14,7 +14,7 @@ class DriBatchIngest::CreateManifest
     )
     creator.create
 
-    Resque.enqueue(ProcessManifest, ingest_id, collection, selected_file(base_dir, creator.csv_file), { 'file_system_token' => nil })
+    Resque.enqueue(DriBatchIngest::ProcessManifest, ingest_id, collection, selected_file(base_dir, creator.csv_file), { 'file_system_token' => nil })
   end
 
   private

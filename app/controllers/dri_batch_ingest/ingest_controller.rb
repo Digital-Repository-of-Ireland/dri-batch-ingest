@@ -13,19 +13,7 @@ class DriBatchIngest::IngestController < ApplicationController
   end
 
   def new
-    # begin
-    #   response = RestClient::Request.execute(method: :get, url: collection_url,
-    #                         content_type: :json, accept: :json, timeout: 30)
-    # rescue => e
-    #   flash[:error] = e
-    # end
-
-    @collections = [] #if response && response.code == 200
-                     #JSON.parse(response.body).values.flatten.collect{ |c| [c['collection_title'].first, c['id']] }
-                   #else
-                   #  []
-                   #end
-
+    @collections = user_collections
     Dir.chdir(base_dir){ @user_dirs = directory_hash('.')[:children] }
   end
 
@@ -44,13 +32,13 @@ class DriBatchIngest::IngestController < ApplicationController
     ingest = DriBatchIngest::UserIngest.create(user_id: current_user.id)
 
     if params[:type].present? && params[:type] == 'manifest'
-      Resque.enqueue(ProcessManifest, ingest.id, collection, params['selected_files'], provider_tokens)
+      Resque.enqueue(DriBatchIngest::ProcessManifest, ingest.id, collection, params['selected_files'], provider_tokens)
     else
       metadata_path = params[:metadata_path]
       asset_path = params[:asset_path]
       preservation_path = params[:preservation_path]
           
-      Resque.enqueue(CreateManifest, ingest.id, base_dir, current_user.email, collection, metadata_path, asset_path, preservation_path)
+      Resque.enqueue(DriBatchIngest::CreateManifest, ingest.id, base_dir, current_user.email, collection, metadata_path, asset_path, preservation_path)
     end
     
     redirect_to ingests_url(ingest)
@@ -60,15 +48,33 @@ class DriBatchIngest::IngestController < ApplicationController
     @batch = DriBatchIngest::IngestBatch.find(params[:id])
 
     media_object_ids = @batch.media_objects.status('FAILED').pluck(:id)
-    Resque.enqueue(ProcessBatch, @batch.id, media_object_ids)
+    Resque.enqueue(DriBatchIngest::ProcessBatch, @batch.id, media_object_ids)
   
     redirect_to ingests_url
   end
 
   private
+ 
+  def user_collections
+    query = "_query_:\"{!join from=id to=ancestor_id_sim}manager_access_person_ssim:#{current_user.email}\""
+    query += " OR manager_access_person_ssim:#{current_user.email}"
 
-  def collection_url
-    "#{Settings.dri.endpoint}/collections?user_email=#{current_user.email}&user_token=#{current_user.authentication_token}"
+    fq = ["+#{ActiveFedora.index_field_mapper.solr_name('is_collection', :facetable, type: :string)}:true"]
+    
+    if params[:governing].present?
+      fq << "+#{ActiveFedora.index_field_mapper.solr_name('isGovernedBy', :stored_searchable, type: :symbol)}:#{params[:governing]}"
+    end
+    
+    solr_query = Solr::Query.new(query, 100, { fq: fq })
+    solr_query.map do |document| 
+      [
+        document[
+        ActiveFedora.index_field_mapper.solr_name(
+             'title', :stored_searchable, type: :string
+        )].first,
+        document.id
+      ]
+    end
   end
 
   def directory_hash(path, name=nil, exclude = [])                                

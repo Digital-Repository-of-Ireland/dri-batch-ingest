@@ -15,7 +15,7 @@
 class CreateTableIngestBatch < ActiveRecord::Migration
 
   def change
-    create_table :batch_ingest_ingest_batches do |t|
+    create_table :dri_batch_ingest_ingest_batches do |t|
       t.string :email
       t.string :collection_id
       t.integer :user_ingest_id
