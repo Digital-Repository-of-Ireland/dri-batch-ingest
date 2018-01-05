@@ -1,6 +1,6 @@
 DriBatchIngest::Engine.routes.draw do
 
-  root :to => "ingest#new"
+  get '/', to: "ingest#new"
 
   get 'batch', to: 'ingest#new', as: :new_batch
   get 'batch/:id', to: 'ingest#show', as: :batch

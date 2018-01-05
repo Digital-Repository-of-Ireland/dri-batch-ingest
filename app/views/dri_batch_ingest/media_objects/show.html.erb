@@ -1,4 +1,4 @@
-<div id="dri_crumbtrail_nav_container_id" style="width: 25%">
+<div id="dri_crumbtrail_nav_container_id">
   <ol class="breadcrumb">
     <li><%= link_to "Ingests", ingests_path %></li>
     <li><%= link_to "Objects", batch_path(@batch.id) %></li>
@@ -8,7 +8,7 @@
 
 <%= paginate @files %>
 
-<table class="table" style="width: 25%">
+<table class="table">
   <thead>
   <tr>
     <th>File</th>
@@ -29,7 +29,7 @@
     <% elsif mf.status_code == 'PENDING' %>
       <% row_class = "info" %>
     <% end %>
-    <tr class="<%= row_class %>" id="popover" data-toggle="popover" data-placement="bottom" title="<%= title %>" data-content="<%= "Link: <a href='#{url}'>#{title}</a><br/>Size: #{size}" %>">
+    <tr class="<%= row_class %>" id="popover" data-toggle="popover" data-placement="bottom" title="<%= title %>" data-content="<%= "Link: <a href='#{mf.file_location}'>#{title}</a><br/>Size: #{size}" %>">
       <td><%= mf.id %></td><td><%= mf.updated_at %></td><td><%= mf.file_location %></td><td><%= mf.status_code %></td>
     </tr>
   <% end %>

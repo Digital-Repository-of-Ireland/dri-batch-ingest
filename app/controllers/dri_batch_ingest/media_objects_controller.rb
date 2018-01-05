@@ -1,3 +1,5 @@
+require 'filesize'
+
 class DriBatchIngest::MediaObjectsController < ApplicationController
   before_filter :authenticate_user_from_token!
   before_filter :authenticate_user!
@@ -13,7 +15,7 @@ class DriBatchIngest::MediaObjectsController < ApplicationController
       info = {}
       ds = JSON.parse(f['download_spec'])
       info[:title] = ds['file_name']
-      info[:size] = Filesize.from("#{f.file_size} B").pretty
+      info[:size] = ::Filesize.from("#{f.file_size} B").pretty
       info[:url] = ds['url']
       @file_info[f.id] = info
     end
