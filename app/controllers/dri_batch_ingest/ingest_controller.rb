@@ -28,7 +28,7 @@ class DriBatchIngest::IngestController < ApplicationController
   end
 
   def create
-    collection = params[:collection]
+    collection = params[:collection_id]
     ingest = DriBatchIngest::UserIngest.create(user_id: current_user.id)
 
     if params[:type].present? && params[:type] == 'manifest'
@@ -64,17 +64,38 @@ class DriBatchIngest::IngestController < ApplicationController
     if params[:governing].present?
       fq << "+#{ActiveFedora.index_field_mapper.solr_name('isGovernedBy', :stored_searchable, type: :symbol)}:#{params[:governing]}"
     end
-    
+    fq << "+#{ActiveFedora.index_field_mapper.solr_name('has_model', :stored_searchable, type: :symbol)}:\"DRI::QualifiedDublinCore\""
+
     solr_query = Solr::Query.new(query, 100, { fq: fq })
-    solr_query.map do |document| 
-      [
-        document[
-        ActiveFedora.index_field_mapper.solr_name(
-             'title', :stored_searchable, type: :string
-        )].first,
-        document.id
-      ]
+    nested_hash(build_collection_entries(solr_query))
+  end
+
+  def build_collection_entries(solr_query)
+    entries = []
+    solr_query.each do |document|
+      id = document.id
+      title = document[
+                ActiveFedora.index_field_mapper.solr_name(
+                'title', :stored_searchable, type: :string
+              )].first
+      parents = document[
+                ActiveFedora.index_field_mapper.solr_name(
+                'ancestor_id', :stored_searchable, type: :string
+              )]
+
+      entries << { id: id, type: 'folder', name: title, parent_id: parents.nil? ? nil : parents.first }
     end
+
+    entries
+  end
+
+  def nested_hash(entries)
+    nested_hash = Hash[entries.map{|e| [e[:id], e.merge(children: [])]}]
+    nested_hash.each do |id, item|
+      parent = nested_hash[item[:parent_id]]
+      parent[:children] << item if parent
+    end
+    nested_hash.select { |id, item| item[:parent_id].nil? }.values
   end
 
   def directory_hash(path, name=nil, exclude = [])                                

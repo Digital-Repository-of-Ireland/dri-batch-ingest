@@ -2,7 +2,7 @@
   <div class="wizard" data-initialize="wizard" id="ingestWizard">
     <div class="steps-container">
         <ul class="steps">
-            <li data-step="1" data-name="collection" class="active">
+            <li data-step="1" class="active">
                 <span class="badge">1</span>Collection
                 <span class="chevron"></span>
             </li>
@@ -27,6 +27,7 @@
             <span class="glyphicon glyphicon-arrow-right"></span>
         </button>
     </div>
+    
     <div class="step-content">
       <div class="step-pane active alert" data-step="1">
         <%= form_tag(batch_ingest_path, id: 'main_form', method: 'post') do %>
@@ -34,11 +35,33 @@
           <%= hidden_field_tag 'asset_path' %>
           <%= hidden_field_tag 'preservation_path' %>
           <%= hidden_field_tag 'type', 'create' %>
-          <%= hidden_field_tag 'collection' %>
+          <%= hidden_field_tag 'collection_id' %>
 
-         <%= render partial: 'collection_dropdown' %>
-          
+          <h4>Collection for ingest</h4>
+          <p>Select the collection to ingest to</p>
+          <div class="form-group">
+            <ul class="tree tree-folder-select" role="tree" id="collectionSelectable">
+              <li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">
+                <div class="tree-branch-header">
+                  <button type="button" class="glyphicon icon-caret glyphicon-play"><span class="sr-only">Open</span></button>
+                  <button type="button" class="tree-branch-name">
+                    <span class="glyphicon icon-folder glyphicon-folder-close"></span>
+                    <span class="tree-label"></span>
+                  </button>
+                </div>
+                <ul class="tree-branch-children" role="group"></ul>
+                <div class="tree-loader" role="alert">Loading...</div>
+              </li>
+              <li class="tree-item hide" data-template="treeitem" role="treeitem">
+                <button type="button" class="tree-item-name">
+                  <span class="glyphicon icon-item fueluxicon-bullet"></span>
+                  <span class="tree-label"></span>
+                </button>
+              </li>
+            </ul>
+          </div>
       </div>
+
       <div class="step-pane alert" data-step="2">
           <h4>Select metadata directory</h4>
           <p>This directory should contain the XML metadata files with the file extension <b>.xml</b></p>
@@ -63,7 +86,6 @@
                 </button>
               </li>
             </ul>
-
           </div>
         </div>
         <div class="step-pane alert" data-step="3">
@@ -93,7 +115,6 @@
                   </button>
                 </li>
               </ul>
-
             </div>
         </div>
         <div class="step-pane alert" data-step="4">
@@ -121,25 +142,24 @@
                   </button>
                 </li>
               </ul>
-
             </div>
         </div>
-        <% end %>
+
+        <% end %> <!-- close form tag -->
       </div>
   </div>
 
   <script>
-    $('#ingestWizard #collectionCombobox').combobox();
-
     $('#ingestWizard').on('finished.fu.wizard', function (e, data) {
-      if (typeof $('#metadataSelectableFolder').tree('selectedItems')[0] == 'undefined') {
+     if (typeof $('#metadataSelectableFolder').tree('selectedItems')[0] == 'undefined') {
         alert('You must select a metadata directory.');
         $('#ingestWizard').wizard('selectedItem', {
            step: 2
         });
       } else {
         $("#metadata_path").val($('#metadataSelectableFolder').tree('selectedItems')[0].path);
-        
+        $("#ingestWizard #collection_id").val($('#ingestWizard #collectionSelectable').tree('selectedItems')[0].id);
+
         if (typeof $('#assetSelectableFolder').tree('selectedItems')[0] !== 'undefined') {
           $("#asset_path").val($('#assetSelectableFolder').tree('selectedItems')[0].path);
         }
@@ -147,21 +167,15 @@
         if (typeof $('#preservationSelectableFolder').tree('selectedItems')[0] !== 'undefined') {
           $("#preservation_path").val($('#preservationSelectableFolder').tree('selectedItems')[0].path);
         }
-
-        if (typeof $('#ingestWizard #collectionCombobox').combobox('selectedItem').value !== 'undefined') { 
-          $('#ingestWizard #collection').val($('#ingestWizard #collectionCombobox').combobox('selectedItem').value)
-        } else {
-          $('#ingestWizard #collection').val($('#ingestWizard #collectionCombobox').combobox('selectedItem').text)
-        }
-
+      
         $('#main_form').submit();
       }
     });
 
     $('#ingestWizard').on('actionclicked.fu.wizard', function (e, data) {
       if (data.step === 1 && data.direction === 'next') {
-        if ($('#ingestWizard #collectionCombobox').combobox('selectedItem').text == '') {
-          alert('You must enter a collection ID.');
+        if (typeof $('#ingestWizard #collectionSelectable').tree('selectedItems')[0] == 'undefined') {
+          alert('You must select a collection.');
           return e.preventDefault();
         }
       } else if(data.step === 2 && data.direction === 'next') {
@@ -173,9 +187,19 @@
     });
     
     var folders = JSON.parse('<%= @user_dirs.to_json.html_safe %>');
+    var collections = JSON.parse('<%= raw escape_javascript(@collections.to_json) %>');
+    
+    var collectionDataSource = new StaticTreeDataSource(collections, true);
     var metadataDataSource = new StaticTreeDataSource(folders, true);
     var assetDataSource = new StaticTreeDataSource(folders, true);
     var preservationDataSource = new StaticTreeDataSource(folders, true);
+
+    $('#ingestWizard #collectionSelectable').tree({
+      dataSource: collectionDataSource.getData,
+      cacheItems: true,
+      folderSelect: true,
+      multiSelect: false
+    });
 
     $('#metadataSelectableFolder').tree({
       dataSource: metadataDataSource.getData,
