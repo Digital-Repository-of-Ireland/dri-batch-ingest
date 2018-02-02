@@ -1,4 +1,6 @@
 require 'dri_batch_ingest/csv_creator'
+require 'avalon/batch'
+require 'dri_batch_ingest/processors'
 
 class DriBatchIngest::CreateManifest
   @queue = :create_manifest
@@ -14,22 +16,21 @@ class DriBatchIngest::CreateManifest
     )
     creator.create
 
-    Resque.enqueue(DriBatchIngest::ProcessManifest, ingest_id, collection, selected_file(base_dir, creator.csv_file), { 'file_system_token' => nil })
+    package = Avalon::Batch::Package.new(
+        creator.csv_file,
+        collection,
+        DriBatchIngest::Processors::EntryProcessor
+      )
+
+    ingest = DriBatchIngest::UserIngest.find(ingest_id)
+    batch = DriBatchIngest::IngestBatch.create(collection_id: collection, email: package.manifest.email, user_ingest_id: ingest.id)
+
+    media_objects = package.process!({ 'batch' => batch.id, 'provider' => 'file_system', 
+      'file_system_token' => nil})
+      
+    ingest.batches << batch
+
+    Resque.enqueue(DriBatchIngest::ProcessBatch, batch.id)
+    ingest.save
   end
-
-  private
-
-  def self.selected_file(ingest_dir, manifest_file)
-    full_path = File.expand_path(File.join(ingest_dir, manifest_file))
-    file_size = File.size(full_path).to_i rescue 0
-    file_name = File.basename(full_path)
-
-    {"0" => {
-        "url"=>"file://#{full_path}",
-        "provider"=>"file_system",
-        "file_name"=>file_name, "file_size"=>"#{file_size}"
-      }
-    }
-  end
-
 end

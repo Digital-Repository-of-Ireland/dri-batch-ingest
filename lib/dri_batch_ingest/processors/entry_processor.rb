@@ -53,8 +53,10 @@ module DriBatchIngest
 
         def provider_file_info(user, file_path, opts)
           url_options = BrowseEverything.config
-          url_options[:current_user] = user.email
-
+          if url_options['file_system'].present?
+            url_options['file_system'][:current_user] = user.email
+          end
+          
           browser = BrowseEverything::Browser.new(url_options)
           browser.providers.values.each do |p|
             p.token = opts["#{p.key}_token"]

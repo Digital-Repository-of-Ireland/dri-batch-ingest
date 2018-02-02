@@ -1,4 +1,5 @@
 require "csv"
+require "tmpdir"
 
 class DriBatchIngest::CsvCreator
 
@@ -7,7 +8,9 @@ class DriBatchIngest::CsvCreator
     @base_dir = base_dir
 
     ingest_name = "#{collection}-#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}"
-    @csv_file = "#{ingest_name}.csv"
+
+    temp_dir = Dir.mktmpdir
+    @csv_file = File.join(temp_dir, "#{ingest_name}.csv")
     @header = [ ingest_name, @user_email ]
 
     @metadata_path = metadata_path
