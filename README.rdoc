@@ -1,3 +1,26 @@
 = DRI Batch Ingest
 
 Encapsulates batch ingest functionality for the DRI application as a mountable Rails engine.
+
+The engine provides an interface for bulk ingesting XML metadata and media files into the DRI repository.
+
+== BrowseEverything
+
+The BrowseEverything gem, https://github.com/projecthydra/browse-everything, is used to select
+the manifest/files to ingest. It is configured through a browse_everything_providers.yml file.
+Refer to the gem homepage for documentation.
+
+== Background jobs
+
+The engine requires a queueing system based on Resque and Redis to allow
+asynchronous processing of background jobs. This introduces the following dependencies:
+
+  * Redis (server for the queueing system)
+
+For testing purposes Redis can be installed locally and started with the command
+
+  $ sudo redis-server /opt/local/etc/redis.conf
+
+The worker queues can be started with the following rake task
+
+  $ rake environment resque:work RAILS_ENV=development QUEUE="*" VERBOSE=1
