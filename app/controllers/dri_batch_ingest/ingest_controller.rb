@@ -14,7 +14,11 @@ class DriBatchIngest::IngestController < ApplicationController
 
   def new
     @collections = user_collections
-    Dir.chdir(base_dir){ @user_dirs = directory_hash('.')[:children] }
+    begin
+      Dir.chdir(base_dir){ @user_dirs = directory_hash('.')[:children] }
+    rescue Errno::ENOENT
+      @user_dirs = nil
+    end
   end
 
   def show

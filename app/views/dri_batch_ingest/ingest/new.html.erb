@@ -3,8 +3,15 @@
 </div>
 
 <div style="margin-bottom:10px">
-  <a class="btn btn-primary" href="#" id="existing"><i class="fa fa-upload"></i> Use existing manifest</a>
-  <a class="btn btn-primary" href="#" id="create"><i class="fa fa-wrench"></i> Create manifest from files</a>
+  <% if @user_dirs.nil? %>
+    <p><i class="fa fa-exclamation-triangle"></i> Your user directory could not be found in ingest storage. 
+       If you have not yet done so, please go to <a href='https://repository.dri.ie/cloud' target="_blank">repository.dri.ie/cloud</a> 
+       and sign in to create the storage area. Metadata and files should be uploaded to this area before creating the ingest here.
+    </p>
+  <% else %>
+    <a class="btn btn-primary" href="#" id="existing"><i class="fa fa-upload"></i> Use existing manifest</a>
+    <a class="btn btn-primary" href="#" id="create"><i class="fa fa-wrench"></i> Create manifest from files</a>
+  <% end %>
 </div>
 
 <div id="existing_manifest" style="display:none">
