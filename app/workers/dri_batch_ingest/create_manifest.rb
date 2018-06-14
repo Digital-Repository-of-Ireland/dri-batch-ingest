@@ -25,7 +25,7 @@ class DriBatchIngest::CreateManifest
     ingest = DriBatchIngest::UserIngest.find(ingest_id)
     batch = DriBatchIngest::IngestBatch.create(collection_id: collection, email: package.manifest.email, user_ingest_id: ingest.id)
 
-    media_objects = package.process!({ 'batch' => batch.id, 'provider' => 'file_system', 
+    media_objects = package.process!({ 'batch' => batch.id, 'provider' => 'sandbox_file_system', 
       'file_system_token' => nil})
       
     ingest.batches << batch

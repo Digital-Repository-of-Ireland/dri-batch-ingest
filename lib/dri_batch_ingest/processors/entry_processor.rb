@@ -53,8 +53,8 @@ module DriBatchIngest
 
         def provider_file_info(user, file_path, opts)
           url_options = BrowseEverything.config
-          if url_options['file_system'].present?
-            url_options['file_system'][:current_user] = user.email
+          if url_options['sandbox_file_system'].present?
+            url_options['sandbox_file_system'][:current_user] = user.email
           end
           
           browser = BrowseEverything::Browser.new(url_options)
@@ -62,8 +62,8 @@ module DriBatchIngest
             p.token = opts["#{p.key}_token"]
           end
 
-          if opts['provider'] == 'file_system'
-            file_path = File.join(browser.providers['file_system'].home, file_path)
+          if opts['provider'] == 'sandbox_file_system'
+            file_path = File.join(browser.providers['sandbox_file_system'].home, file_path)
           end
 
           browser.providers[opts['provider']].link_for(file_path.to_s)

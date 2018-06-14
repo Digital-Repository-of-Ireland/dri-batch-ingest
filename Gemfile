@@ -14,4 +14,4 @@ gemspec
 # gem 'byebug', group: [:development, :test]
 
 gem 'avalon_ingest', git: 'https://github.com/stkenny/avalon_ingest'
-gem 'browse-everything', git: 'https://github.com/stkenny/browse-everything.git', branch: 'feature/per_user'
+gem 'browse-everything', git: 'https://github.com/samvera/browse-everything.git'

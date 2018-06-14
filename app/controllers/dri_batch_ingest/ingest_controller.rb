@@ -131,11 +131,11 @@ class DriBatchIngest::IngestController < ApplicationController
 
   def set_base_dir
     url_options = BrowseEverything.config
-    if url_options['file_system'].present?
-      url_options['file_system'][:current_user] = current_user.email
+    if url_options['sandbox_file_system'].present?
+      url_options['sandbox_file_system'][:current_user] = current_user.email
     end
     browser = BrowseEverything::Browser.new(url_options)
-    browser.providers['file_system'].home
+    browser.providers['sandbox_file_system'].home
   end
 
 end
