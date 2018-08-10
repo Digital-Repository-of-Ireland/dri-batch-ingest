@@ -14,6 +14,28 @@ class DriBatchIngest::IngestController < ApplicationController
 
   def new
     @collections = user_collections
+
+    @ingests = DriBatchIngest::UserIngest.where(user_id: current_user.id).order(created_at: :desc).page(params[:page]).per(5)
+    @batches = {}
+
+    @ingests.each do |i|
+      next unless i.batches.first
+      batch = i.batches.first
+    
+      total = batch.media_objects.count
+      pending = batch.media_objects.excluding_failed.pending.count
+      failed = batch.media_objects.failed.count
+      completed = batch.media_objects.completed.count
+
+      counts = {
+            total: total, 
+            pending: pending, 
+            completed: completed, 
+            failed: failed }
+    
+      @batches[batch.id] = counts
+    end 
+
     begin
       Dir.chdir(base_dir){ @user_dirs = directory_hash('.')[:children] }
     rescue Errno::ENOENT
