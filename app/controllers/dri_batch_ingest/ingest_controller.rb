@@ -21,20 +21,20 @@ class DriBatchIngest::IngestController < ApplicationController
     @ingests.each do |i|
       next unless i.batches.first
       batch = i.batches.first
-    
+
       total = batch.media_objects.count
       pending = batch.media_objects.excluding_failed.pending.count
       failed = batch.media_objects.failed.count
       completed = batch.media_objects.completed.count
 
       counts = {
-            total: total, 
-            pending: pending, 
-            completed: completed, 
+            total: total,
+            pending: pending,
+            completed: completed,
             failed: failed }
-    
+
       @batches[batch.id] = counts
-    end 
+    end
 
     begin
       Dir.chdir(base_dir){ @user_dirs = directory_hash('.')[:children] }
@@ -48,7 +48,7 @@ class DriBatchIngest::IngestController < ApplicationController
 
     @media_objects = if params[:status]
                        @batch.media_objects.status(params[:status]).page params[:page]
-                     else 
+                     else
                        @batch.media_objects.page params[:page]
                      end
   end
@@ -63,10 +63,10 @@ class DriBatchIngest::IngestController < ApplicationController
       metadata_path = params[:metadata_path]
       asset_path = params[:asset_path]
       preservation_path = params[:preservation_path]
-          
+
       Resque.enqueue(DriBatchIngest::CreateManifest, ingest.id, base_dir, current_user.email, collection, metadata_path, asset_path, preservation_path)
     end
-    
+
     redirect_to ingests_url(ingest)
   end
 
@@ -75,18 +75,19 @@ class DriBatchIngest::IngestController < ApplicationController
 
     media_object_ids = @batch.media_objects.status('FAILED').pluck(:id)
     Resque.enqueue(DriBatchIngest::ProcessBatch, @batch.id, media_object_ids)
-  
+
     redirect_to ingests_url
   end
 
   private
- 
+
   def user_collections
-    query = "_query_:\"{!join from=id to=ancestor_id_sim}manager_access_person_ssim:#{current_user.email}\""
-    query += " OR manager_access_person_ssim:#{current_user.email}"
+    # User should see any collections that they have manage or edit permissions for
+    query = "(_query_:\"{!join from=id to=ancestor_id_sim}manager_access_person_ssim:#{current_user.email}\" OR manager_access_person_ssim:#{current_user.email})"
+    query += " OR (_query_:\"{!join from=id to=ancestor_id_sim}edit_access_person_ssim:#{current_user.email}\" OR edit_access_person_ssim:#{current_user.email})"
 
     fq = ["+#{ActiveFedora.index_field_mapper.solr_name('is_collection', :facetable, type: :string)}:true"]
-    
+
     if params[:governing].present?
       fq << "+#{ActiveFedora.index_field_mapper.solr_name('isGovernedBy', :stored_searchable, type: :symbol)}:#{params[:governing]}"
     end
@@ -124,21 +125,21 @@ class DriBatchIngest::IngestController < ApplicationController
     nested_hash.select { |id, item| item[:parent_id].nil? }.values
   end
 
-  def directory_hash(path, name=nil, exclude = [])                                
+  def directory_hash(path, name=nil, exclude = [])
     exclude.concat(['..', '.', '.git', '__MACOSX', '.DS_Store'])
-    key = (name || path)              
-    data = { name: key, type: 'folder', path: path }                                             
-    data[:children] = []                                               
-    Dir.foreach(path) do |entry|                                                  
-      next if exclude.include?(entry)   
+    key = (name || path)
+    data = { name: key, type: 'folder', path: path }
+    data[:children] = []
+    Dir.foreach(path) do |entry|
+      next if exclude.include?(entry)
       full_path = path == '.' ? entry : File.join(path, entry)
 
-      if File.directory?(full_path)                                               
-        data[:children] << directory_hash(full_path, entry)                              
-      end                                                                         
-    end                                                                           
-  
-    data                                                                   
+      if File.directory?(full_path)
+        data[:children] << directory_hash(full_path, entry)
+      end
+    end
+
+    data
   end
 
   def provider_tokens
