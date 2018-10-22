@@ -47,9 +47,9 @@ class DriBatchIngest::IngestController < ApplicationController
     @batch = DriBatchIngest::IngestBatch.find(params[:id])
 
     @media_objects = if params[:status]
-                       @batch.media_objects.status(params[:status]).page params[:page]
+                       @batch.media_objects.status(params[:status]).page(params[:page]).per(25)
                      else
-                       @batch.media_objects.page params[:page]
+                       @batch.media_objects.page(params[:page]).per(25)
                      end
   end
 

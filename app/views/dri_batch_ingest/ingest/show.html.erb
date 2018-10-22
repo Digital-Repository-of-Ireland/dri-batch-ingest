@@ -6,14 +6,14 @@
 </div>
 
 <% if request.query_string.include?('FAILED') %>
-  <%= form_for update_batch_path(@batch.id), method: 'put', :html => { :class => "form-inline"} do |f| %>
+  <%= form_for update_batch_path(@batch.id), method: 'put', html: { class: "form-inline"} do |f| %>
     <%= f.submit "Retry Failed", class: 'dri_button_grey' %>
   <% end %>
 <% end %>
 
 <%= paginate @media_objects %>
 
-<table class="table" style="width: 25%">
+<table class="table">
   <thead>
   <tr>
     <th>Object</th>
