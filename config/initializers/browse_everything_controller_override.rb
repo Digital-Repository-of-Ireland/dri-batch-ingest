@@ -1,5 +1,7 @@
 
 BrowseEverythingController.class_eval do
+  include DRI::Renderers::Json
+      
   private
 
   def browser
