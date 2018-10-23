@@ -2,7 +2,12 @@ module BrowseEverything::Driver
   class SandboxFileSystem < BrowseEverything::Driver::FileSystem
 
     def contents(path = '')
-      real_path = File.join(home, path)
+      real_path = if path == ''
+                    File.join(home, path)
+		  else
+	            File.join(config[:home], path)
+		  end
+      
       @entries = if File.directory?(real_path)
                    make_directory_entry real_path
                  else

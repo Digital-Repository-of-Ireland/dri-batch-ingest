@@ -5,6 +5,8 @@ require 'dri_batch_ingest/csv_creator'
 class DriBatchIngest::IngestController < ApplicationController
   before_action :authenticate_user!
 
+  include DRI::Renderers::Json
+
   def base_dir
     @base_dir || set_base_dir
   end
