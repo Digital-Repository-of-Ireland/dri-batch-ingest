@@ -2,11 +2,11 @@
 
 Encapsulates batch ingest functionality for the DRI application as a mountable Rails engine.
 
-The engine provides an interface for bulk ingesting XML metadata and media files into the DRI repository.
+The engine provides an interface for batch ingesting XML metadata and data files into the DRI repository.
 
 == BrowseEverything
 
-The BrowseEverything gem, https://github.com/projecthydra/browse-everything, is used to select
+The BrowseEverything gem, https://github.com/samvera/browse-everything, is used to select
 the manifest/files to ingest. It is configured through a browse_everything_providers.yml file.
 Refer to the gem homepage for documentation.
 
