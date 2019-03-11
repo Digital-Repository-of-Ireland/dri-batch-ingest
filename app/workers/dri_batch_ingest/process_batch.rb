@@ -1,9 +1,10 @@
+# frozen_string_literal: true
 require 'avalon/batch'
 require 'rest-client'
 
 class DriBatchIngest::ProcessBatch
   @queue = :process_batch
-  
+
   def self.perform(batch_id, media_object_ids = nil)
     batch = DriBatchIngest::IngestBatch.find(batch_id)
     user = User.find(batch.user_ingest.user_id)
@@ -14,7 +15,7 @@ class DriBatchIngest::ProcessBatch
     media_objects.each do |mo|
       media_object = mo.is_a?(Avalon::MediaObject) ? mo : DriBatchIngest::MediaObject.find(mo)
       ingest_message = process_media_object(media_object, collection_id)
-      
+
       Resque.enqueue(::ProcessBatchIngest, user.id, collection_id, ingest_message.to_json)
     end
   end
@@ -23,7 +24,7 @@ class DriBatchIngest::ProcessBatch
     master_file.preservation? ? 'preservation' : 'asset'
   end
 
-  def self.metadata_info(id, metadata)
+  def self.metadata_info(metadata)
     metadata_info = {}
     metadata_info['id'] = metadata.id
     metadata_info['label'] = 'metadata'
@@ -41,7 +42,7 @@ class DriBatchIngest::ProcessBatch
     ingest_message = {}
     ingest_message['collection'] = collection_id
     ingest_message['media_object'] = mo.id
-    ingest_message['metadata'] = metadata_info(mo.id, mo.parts.metadata)
+    ingest_message['metadata'] = metadata_info(mo.parts.metadata)
 
     ingest_message['files'] = []
     mo.parts.each do |mf|

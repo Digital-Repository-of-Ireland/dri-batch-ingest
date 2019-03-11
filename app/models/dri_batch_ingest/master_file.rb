@@ -1,10 +1,11 @@
+# frozen_string_literal: true
 module DriBatchIngest
   class MasterFile < ActiveRecord::Base
     belongs_to :media_object, class_name: 'DriBatchIngest::MediaObject'
 
-    END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
+    END_STATES = %w[CANCELLED COMPLETED FAILED].freeze
 
-    scope :metadata, -> { where(metadata: true).take }
+    scope :metadata, -> { find_by(metadata: true) }
 
     def metadata?
       metadata == true
@@ -14,7 +15,7 @@ module DriBatchIngest
       preservation == true
     end
 
-    def process file=nil
+    def process(file = nil)
       raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
     end
 

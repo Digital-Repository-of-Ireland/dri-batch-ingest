@@ -1,15 +1,15 @@
+# frozen_string_literal: true
 require 'avalon/batch'
 require 'json'
 
 module DriBatchIngest
   module Processors
     class EntryProcessor < Avalon::Batch::Entry
-
       def media_object
         @media_object ||= DriBatchIngest::MediaObject.new(collection: @manifest.package.collection)
       end
-            
-      def process!(opts={})
+
+      def process!(opts = {})
         batch = DriBatchIngest::IngestBatch.find(opts['batch'])
         user = User.find(batch.user_ingest.user_id)
 
@@ -23,7 +23,7 @@ module DriBatchIngest
           master_file.preservation = true if file_spec.key?(:label) && file_spec[:label] == 'preservation'
           master_file.save
 
-          spec = download_spec(user, file_spec[:file], opts) 
+          spec = download_spec(user, file_spec[:file], opts)
           master_file.download_spec = spec.to_json
 
           master_file.file_size = spec['file_size'] if spec.key?('file_size')
@@ -31,19 +31,17 @@ module DriBatchIngest
           master_file.status_code = 'PENDING'
 
           media_object.save if master_file.save
-       end
+        end
 
         media_object
       end
 
       private
-         
+
         def download_spec(user, file_path, opts)
           path = Pathname.new(file_path)
-          file_name = path.basename
-          
-          (url,extra) = provider_file_info(user, path, opts)
-               
+          (url, extra) = provider_file_info(user, path, opts)
+
           result = { 'url' => url }
           result.merge!(extra.stringify_keys) unless extra.nil?
           result['expires'] = result['expires'].iso8601 if result.key?('expires')
@@ -56,7 +54,7 @@ module DriBatchIngest
           if url_options['sandbox_file_system'].present?
             url_options['sandbox_file_system'][:current_user] = user.email
           end
-          
+
           browser = BrowseEverything::Browser.new(url_options)
           browser.providers.values.each do |p|
             p.token = opts["#{p.key}_token"]
@@ -68,7 +66,6 @@ module DriBatchIngest
 
           browser.providers[opts['provider']].link_for(file_path.to_s)
         end
-
     end
   end
 end

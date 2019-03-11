@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'underscore-rails'
 require 'fuelux-rails-sass'
 require 'browse_everything'
@@ -16,7 +17,6 @@ module DriBatchIngest
           app.config.paths["db/migrate"] << expanded_path
         end
       end
-    end 
-
+    end
   end
 end

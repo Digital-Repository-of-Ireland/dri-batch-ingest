@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'avalon/batch'
 require 'dri_batch_ingest/processors/entry_processor'
 require 'dri_batch_ingest/csv_creator'
@@ -12,8 +13,7 @@ class DriBatchIngest::IngestController < ApplicationController
     @base_dir || set_base_dir
   end
 
-  def index
-  end
+  def index; end
 
   def new
     @collections = user_collections
@@ -31,16 +31,17 @@ class DriBatchIngest::IngestController < ApplicationController
       completed = batch.media_objects.completed.count
 
       counts = {
-            total: total,
-            pending: pending,
-            completed: completed,
-            failed: failed }
+        total: total,
+        pending: pending,
+        completed: completed,
+        failed: failed
+      }
 
       @batches[batch.id] = counts
     end
 
     begin
-      Dir.chdir(base_dir){ @user_dirs = directory_hash('.')[:children] }
+      Dir.chdir(base_dir) { @user_dirs = directory_hash('.')[:children] }
     rescue Errno::ENOENT
       @user_dirs = nil
     end
@@ -84,84 +85,83 @@ class DriBatchIngest::IngestController < ApplicationController
 
   private
 
-  def user_collections
-    # User should see any collections that they have manage or edit permissions for
-    query = "(_query_:\"{!join from=id to=ancestor_id_sim}manager_access_person_ssim:#{current_user.email}\" OR manager_access_person_ssim:#{current_user.email})"
-    query += " OR (_query_:\"{!join from=id to=ancestor_id_sim}edit_access_person_ssim:#{current_user.email}\" OR edit_access_person_ssim:#{current_user.email})"
+    def user_collections
+      # User should see any collections that they have manage or edit permissions for
+      query = "(_query_:\"{!join from=id to=ancestor_id_sim}manager_access_person_ssim:#{current_user.email}\" OR manager_access_person_ssim:#{current_user.email})"
+      query += " OR (_query_:\"{!join from=id to=ancestor_id_sim}edit_access_person_ssim:#{current_user.email}\" OR edit_access_person_ssim:#{current_user.email})"
 
-    fq = ["+#{ActiveFedora.index_field_mapper.solr_name('is_collection', :facetable, type: :string)}:true"]
+      fq = ["+#{ActiveFedora.index_field_mapper.solr_name('is_collection', :facetable, type: :string)}:true"]
 
-    if params[:governing].present?
-      fq << "+#{ActiveFedora.index_field_mapper.solr_name('isGovernedBy', :stored_searchable, type: :symbol)}:#{params[:governing]}"
-    end
-    fq << "+#{ActiveFedora.index_field_mapper.solr_name('has_model', :stored_searchable, type: :symbol)}:\"DRI::QualifiedDublinCore\""
-
-    solr_query = Solr::Query.new(query, 100, { fq: fq })
-    nested_hash(build_collection_entries(solr_query))
-  end
-
-  def build_collection_entries(solr_query)
-    entries = []
-    solr_query.each do |document|
-      id = document.id
-      title = document[
-                ActiveFedora.index_field_mapper.solr_name(
-                'title', :stored_searchable, type: :string
-              )].first
-      parents = document[
-                ActiveFedora.index_field_mapper.solr_name(
-                'ancestor_id', :stored_searchable, type: :string
-              )]
-
-      entries << { id: id, type: 'folder', name: title, parent_id: parents.nil? ? nil : parents.first }
-    end
-
-    entries
-  end
-
-  def nested_hash(entries)
-    nested_hash = Hash[entries.map{|e| [e[:id], e.merge(children: [])]}]
-    nested_hash.each do |id, item|
-      parent = nested_hash[item[:parent_id]]
-      parent[:children] << item if parent
-    end
-    nested_hash.select { |id, item| item[:parent_id].nil? }.values
-  end
-
-  def directory_hash(path, name=nil, exclude = [])
-    exclude.concat(['..', '.', '.git', '__MACOSX', '.DS_Store'])
-    key = (name || path)
-    data = { name: key, type: 'folder', path: path }
-    data[:children] = []
-    Dir.foreach(path) do |entry|
-      next if exclude.include?(entry)
-      full_path = path == '.' ? entry : File.join(path, entry)
-
-      if File.directory?(full_path)
-        data[:children] << directory_hash(full_path, entry)
+      if params[:governing].present?
+        fq << "+#{ActiveFedora.index_field_mapper.solr_name('isGovernedBy', :stored_searchable, type: :symbol)}:#{params[:governing]}"
       end
+      fq << "+#{ActiveFedora.index_field_mapper.solr_name('has_model', :stored_searchable, type: :symbol)}:\"DRI::QualifiedDublinCore\""
+
+      solr_query = Solr::Query.new(query, 100, fq: fq)
+      nested_hash(build_collection_entries(solr_query))
     end
 
-    data
-  end
+    def build_collection_entries(solr_query)
+      entries = []
+      solr_query.each do |document|
+        id = document.id
+        title = document[
+                  ActiveFedora.index_field_mapper.solr_name(
+                    'title', :stored_searchable, type: :string
+                  )].first
+        parents = document[
+                  ActiveFedora.index_field_mapper.solr_name(
+                    'ancestor_id', :stored_searchable, type: :string
+                  )]
 
-  def provider_tokens
-    tokens = {}
-    browser = BrowseEverything::Browser.new
-    browser.providers.values.each do |p|
-      tokens["#{p.key}_token"] = session["#{p.key}_token"] if session["#{p.key}_token"].present?
+        entries << { id: id, type: 'folder', name: title, parent_id: parents.nil? ? nil : parents.first }
+      end
+
+      entries
     end
 
-    tokens
-  end
-
-  def set_base_dir
-    url_options = BrowseEverything.config
-    if url_options['sandbox_file_system'].present?
-      url_options['sandbox_file_system'][:current_user] = current_user.email
+    def nested_hash(entries)
+      nested_hash = Hash[entries.map { |e| [e[:id], e.merge(children: [])] }]
+      nested_hash.each do |_id, item|
+        parent = nested_hash[item[:parent_id]]
+        parent[:children] << item if parent
+      end
+      nested_hash.select { |_id, item| item[:parent_id].nil? }.values
     end
-    browser = BrowseEverything::Browser.new(url_options)
-    browser.providers['sandbox_file_system'].home
-  end
 
+    def directory_hash(path, name = nil, exclude = [])
+      exclude.concat(['..', '.', '.git', '__MACOSX', '.DS_Store'])
+      key = (name || path)
+      data = { name: key, type: 'folder', path: path }
+      data[:children] = []
+      Dir.foreach(path) do |entry|
+        next if exclude.include?(entry)
+        full_path = path == '.' ? entry : File.join(path, entry)
+
+        if File.directory?(full_path)
+          data[:children] << directory_hash(full_path, entry)
+        end
+      end
+
+      data
+    end
+
+    def provider_tokens
+      tokens = {}
+      browser = BrowseEverything::Browser.new
+      browser.providers.values.each do |p|
+        tokens["#{p.key}_token"] = session["#{p.key}_token"] if session["#{p.key}_token"].present?
+      end
+
+      tokens
+    end
+
+    def set_base_dir
+      url_options = BrowseEverything.config
+      if url_options['sandbox_file_system'].present?
+        url_options['sandbox_file_system'][:current_user] = current_user.email
+      end
+      browser = BrowseEverything::Browser.new(url_options)
+      browser.providers['sandbox_file_system'].home
+    end
 end
