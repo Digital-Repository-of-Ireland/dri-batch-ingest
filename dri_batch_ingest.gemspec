@@ -19,15 +19,15 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency "rails", "~> 4.2.10"
+  s.add_dependency 'rails'
   s.add_dependency 'kaminari'
   s.add_dependency 'fuelux-rails-sass'
   s.add_dependency 'underscore-rails'
   s.add_dependency 'iconv'
   s.add_dependency 'filesize'
 
-  s.add_development_dependency "sqlite3"
+  s.add_development_dependency 'sqlite3'
   s.add_development_dependency "rspec-rails"
-  s.add_development_dependency "bixby"
+  s.add_development_dependency 'bixby'
   s.add_development_dependency 'rubocop', '~> 0.48.0'
 end
