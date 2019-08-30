@@ -1,4 +1,4 @@
-class CreateTableMasterFiles < ActiveRecord::Migration
+class CreateTableMasterFiles < ActiveRecord::Migration[4.2]
   def change
     create_table :dri_batch_ingest_master_files do |t|
       t.references :media_object, index: true

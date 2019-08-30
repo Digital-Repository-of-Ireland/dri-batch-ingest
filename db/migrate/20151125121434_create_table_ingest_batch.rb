@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class CreateTableIngestBatch < ActiveRecord::Migration
+class CreateTableIngestBatch < ActiveRecord::Migration[4.2]
 
   def change
     create_table :dri_batch_ingest_ingest_batches do |t|

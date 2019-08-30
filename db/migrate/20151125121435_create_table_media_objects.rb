@@ -1,4 +1,4 @@
-class CreateTableMediaObjects < ActiveRecord::Migration
+class CreateTableMediaObjects < ActiveRecord::Migration[4.2]
   def change
     create_table :dri_batch_ingest_media_objects do |t|
       t.references :ingest_batch, index: { name: 'ingest_batch_idx' }
