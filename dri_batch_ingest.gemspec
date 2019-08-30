@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'filesize'
 
   s.add_development_dependency 'sqlite3'
-  s.add_development_dependency "rspec-rails"
+  s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'bixby'
   s.add_development_dependency 'rubocop', '~> 0.48.0'
 end
