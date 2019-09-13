@@ -19,6 +19,9 @@ load 'rails/tasks/statistics.rake'
 
 Bundler::GemHelper.install_tasks
 
+APP_RAKEFILE = File.expand_path("../spec/test_app/Rakefile", __FILE__)
+load 'rails/tasks/engine.rake'
+
 require 'rake/testtask'
 
 Rake::TestTask.new(:test) do |t|

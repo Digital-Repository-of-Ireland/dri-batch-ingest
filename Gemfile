@@ -13,5 +13,10 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
+gem 'paper_trail'
+gem 'user_group', git: 'ssh://git@tracker.dri.ie:2200/drirepo/dri-user-group.git', branch: 'develop'
 gem 'avalon_ingest', git: 'https://github.com/stkenny/avalon_ingest'
 gem 'browse-everything', git: 'https://github.com/samvera/browse-everything.git'
+
+gem 'simplecov', require: false, group: :test
+gem 'database_cleaner', require: false, group: :test

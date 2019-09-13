@@ -90,12 +90,12 @@ class DriBatchIngest::IngestController < ApplicationController
       query = "(_query_:\"{!join from=id to=ancestor_id_sim}manager_access_person_ssim:#{current_user.email}\" OR manager_access_person_ssim:#{current_user.email})"
       query += " OR (_query_:\"{!join from=id to=ancestor_id_sim}edit_access_person_ssim:#{current_user.email}\" OR edit_access_person_ssim:#{current_user.email})"
 
-      fq = ["+#{ActiveFedora.index_field_mapper.solr_name('is_collection', :facetable, type: :string)}:true"]
+      fq = ["+is_collection_sim:true"]
 
       if params[:governing].present?
-        fq << "+#{ActiveFedora.index_field_mapper.solr_name('isGovernedBy', :stored_searchable, type: :symbol)}:#{params[:governing]}"
+        fq << "+isGovernedBy_ssim:#{params[:governing]}"
       end
-      fq << "+#{ActiveFedora.index_field_mapper.solr_name('has_model', :stored_searchable, type: :symbol)}:\"DRI::QualifiedDublinCore\""
+      fq << "+has_model_ssim:\"DRI::QualifiedDublinCore\""
 
       solr_query = Solr::Query.new(query, 100, fq: fq)
       nested_hash(build_collection_entries(solr_query))
@@ -105,14 +105,8 @@ class DriBatchIngest::IngestController < ApplicationController
       entries = []
       solr_query.each do |document|
         id = document.id
-        title = document[
-                  ActiveFedora.index_field_mapper.solr_name(
-                    'title', :stored_searchable, type: :string
-                  )].first
-        parents = document[
-                  ActiveFedora.index_field_mapper.solr_name(
-                    'ancestor_id', :stored_searchable, type: :string
-                  )]
+        title = document['title_tesim'].first
+        parents = document['ancestor_id_tesim']
 
         entries << { id: id, type: 'folder', name: title, parent_id: parents.nil? ? nil : parents.first }
       end
