@@ -1,0 +1,3 @@
+sandbox_file_system:
+   home: tmp
+   sandbox_template: '{current_user}/files'

@@ -11,7 +11,7 @@ module DriBatchIngest
 
       def process!(opts = {})
         batch = DriBatchIngest::IngestBatch.find(opts['batch'])
-        user = User.find(batch.user_ingest.user_id)
+        user = UserGroup::User.find(batch.user_ingest.user_id)
 
         media_object.ingest_batch = batch
         media_object.save
