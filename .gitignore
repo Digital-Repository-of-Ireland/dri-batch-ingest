@@ -2,6 +2,8 @@ Gemfile.lock
 .bundle/
 log/*.log
 pkg/
+spec/fixtures/files/*.error
+spec/fixtures/files/*.processed
 spec/test_app/db
 spec/test_app/log/*.log
 spec/test_app/tmp/

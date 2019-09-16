@@ -28,6 +28,8 @@ describe DriBatchIngest::CreateManifest do
     expect(user_ingest.batches.first.media_objects.count).to be 2
     expect(user_ingest.batches.first.media_objects.first.parts.count).to eq 3
     expect(user_ingest.batches.first.media_objects[1].parts.count).to eq 3
+
+    user_ingest.destroy
   end
 
 end

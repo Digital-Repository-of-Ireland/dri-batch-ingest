@@ -38,6 +38,8 @@ describe DriBatchIngest::Processors::EntryProcessor do
 
       expect(ingest_batch.media_objects.count).to eq 1
       expect(ingest_batch.media_objects.first.parts.count).to eq 2
+
+      user_ingest.destroy
     end
 
   end
