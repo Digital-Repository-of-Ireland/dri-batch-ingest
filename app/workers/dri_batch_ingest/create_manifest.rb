@@ -24,7 +24,11 @@ class DriBatchIngest::CreateManifest
     )
 
     ingest = DriBatchIngest::UserIngest.find(ingest_id)
-    batch = DriBatchIngest::IngestBatch.create(collection_id: collection, email: package.manifest.email, user_ingest_id: ingest.id)
+    batch = DriBatchIngest::IngestBatch.create(
+              collection_id: collection,
+              email: package.manifest.email,
+              user_ingest_id: ingest.id
+            )
 
     package.process!(
       'batch' => batch.id,

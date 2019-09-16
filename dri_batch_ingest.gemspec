@@ -14,9 +14,9 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/Digital-Repository-of-Ireland/dri_batch_ingest"
   s.summary     = "Batch ingest functionality for the DRI application"
   s.description = "Batch ingest functionality for the DRI application"
-  s.license     = "MIT"
+  s.license     = "Apache-2.0"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'rails'
@@ -25,6 +25,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'underscore-rails'
   s.add_dependency 'iconv'
   s.add_dependency 'filesize'
+  s.add_dependency 'resque'
+  s.add_dependency 'rest-client'
+  s.add_dependency 'roo'
 
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'rspec-rails'
