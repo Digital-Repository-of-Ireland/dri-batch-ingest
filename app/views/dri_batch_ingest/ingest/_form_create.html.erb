@@ -27,7 +27,7 @@
             <span class="glyphicon glyphicon-arrow-right"></span>
         </button>
     </div>
-    
+
     <div class="step-content">
       <div class="step-pane active alert" data-step="1">
         <%= form_tag(batch_ingest_path, id: 'main_form', method: 'post') do %>
@@ -167,7 +167,7 @@
         if (typeof $('#preservationSelectableFolder').tree('selectedItems')[0] !== 'undefined') {
           $("#preservation_path").val($('#preservationSelectableFolder').tree('selectedItems')[0].path);
         }
-      
+
         $('#main_form').submit();
       }
     });
@@ -185,10 +185,10 @@
         }
       }
     });
-    
-    var folders = JSON.parse('<%= @user_dirs.to_json.html_safe %>');
+
+    var folders = JSON.parse('<%= raw escape_javascript(@user_dirs.to_json) %>');
     var collections = JSON.parse('<%= raw escape_javascript(@collections.to_json) %>');
-    
+
     var collectionDataSource = new StaticTreeDataSource(collections, true);
     var metadataDataSource = new StaticTreeDataSource(folders, true);
     var assetDataSource = new StaticTreeDataSource(folders, true);
