@@ -87,10 +87,10 @@ class DriBatchIngest::IngestController < ApplicationController
 
     def user_collections
       # User should see any collections that they have manage or edit permissions for
-      query = "(_query_:\"{!join from=id to=ancestor_id_sim}manager_access_person_ssim:#{current_user.email}\" OR manager_access_person_ssim:#{current_user.email})"
-      query += " OR (_query_:\"{!join from=id to=ancestor_id_sim}edit_access_person_ssim:#{current_user.email}\" OR edit_access_person_ssim:#{current_user.email})"
+      query = "(_query_:\"{!join from=id to=ancestor_id_ssim}manager_access_person_ssim:#{current_user.email}\" OR manager_access_person_ssim:#{current_user.email})"
+      query += " OR (_query_:\"{!join from=id to=ancestor_id_ssim}edit_access_person_ssim:#{current_user.email}\" OR edit_access_person_ssim:#{current_user.email})"
 
-      fq = ["+is_collection_sim:true"]
+      fq = ["+is_collection_ssi:true"]
 
       if params[:governing].present?
         fq << "+isGovernedBy_ssim:#{params[:governing]}"
@@ -106,7 +106,7 @@ class DriBatchIngest::IngestController < ApplicationController
       solr_query.each do |document|
         id = document.id
         title = document['title_tesim'].first
-        parents = document['ancestor_id_tesim']
+        parents = document['ancestor_id_ssim']
 
         entries << { id: id, type: 'folder', name: title, parent_id: parents.nil? ? nil : parents.first }
       end
