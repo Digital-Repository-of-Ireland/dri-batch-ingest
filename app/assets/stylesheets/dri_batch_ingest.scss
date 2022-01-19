@@ -1,2 +1,8 @@
-@import "fuelux";
+@import "jquery-smartwizard/smart_wizard_all.min";
+@import "jstree-default";
 @import "browse_everything";
+
+.ingest-wizard-container {
+  width: 90%;
+  display: inline-block;
+}

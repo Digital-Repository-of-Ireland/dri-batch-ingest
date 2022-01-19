@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require 'underscore-rails'
-require 'fuelux-rails-sass'
+require 'jstree-rails-4'
 require 'browse_everything'
 
 module DriBatchIngest

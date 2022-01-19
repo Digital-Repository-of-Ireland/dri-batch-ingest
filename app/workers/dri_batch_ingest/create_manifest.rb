@@ -10,12 +10,9 @@ class DriBatchIngest::CreateManifest
     creator = DriBatchIngest::CsvCreator.new(
       base_dir,
       email,
-      collection,
-      metadata_path,
-      asset_path,
-      preservation_path
+      collection
     )
-    creator.create
+    creator.create(metadata_path, asset_path, preservation_path)
 
     package = Avalon::Batch::Package.new(
       creator.csv_file,
@@ -25,10 +22,10 @@ class DriBatchIngest::CreateManifest
 
     ingest = DriBatchIngest::UserIngest.find(ingest_id)
     batch = DriBatchIngest::IngestBatch.create(
-              collection_id: collection,
-              email: package.manifest.email,
-              user_ingest_id: ingest.id
-            )
+      collection_id: collection,
+      email: package.manifest.email,
+      user_ingest_id: ingest.id
+    )
 
     package.process!(
       'batch' => batch.id,

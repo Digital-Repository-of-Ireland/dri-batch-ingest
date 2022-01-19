@@ -4,4 +4,3 @@ module DriBatchIngest
     autoload :EntryProcessor, 'dri_batch_ingest/processors/entry_processor'
   end
 end
-

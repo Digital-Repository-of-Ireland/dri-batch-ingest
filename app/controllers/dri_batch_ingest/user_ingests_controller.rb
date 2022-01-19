@@ -4,26 +4,28 @@ class DriBatchIngest::UserIngestsController < ApplicationController
 
   def index
     @ingests = DriBatchIngest::UserIngest.where(user_id: current_user.id).order(created_at: :desc).page(params[:page]).per(10)
-    @batches = {}
+    @batches = user_batches
+  end
+
+  def show; end
+
+  private
+
+  def user_batches
+    batches = {}
 
     @ingests.each do |i|
       next unless i.batches.first
       batch = i.batches.first
 
-      total = batch.media_objects.count
-      pending = batch.media_objects.excluding_failed.pending.count
-      failed = batch.media_objects.failed.count
-      completed = batch.media_objects.completed.count
-
-      counts = {
-        total: total,
-        pending: pending,
-        completed: completed,
-        failed: failed
+      batches[batch.id] = {
+        total: batch.media_objects.count,
+        pending: batch.media_objects.excluding_failed.pending.count,
+        completed: batch.media_objects.completed.count,
+        failed: batch.media_objects.failed.count
       }
-      @batches[batch.id] = counts
     end
-  end
 
-  def show; end
+    batches
+  end
 end

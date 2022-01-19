@@ -19,15 +19,15 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency 'rails'
+  s.add_dependency 'rails', '>= 5.2'
   s.add_dependency 'kaminari'
-  s.add_dependency 'fuelux-rails-sass'
   s.add_dependency 'underscore-rails'
   s.add_dependency 'iconv'
   s.add_dependency 'filesize'
   s.add_dependency 'resque'
-  s.add_dependency 'rest-client'
+  s.add_dependency 'rest-client', '~> 2.0'
   s.add_dependency 'roo'
+  s.add_dependency 'browse-everything', '~> 1.0'
 
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'rspec-rails'
@@ -36,5 +36,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'shoulda'
   s.add_development_dependency 'shoulda-matchers'
   s.add_development_dependency 'bixby'
-  s.add_development_dependency 'rubocop', '~> 0.48.0'
 end

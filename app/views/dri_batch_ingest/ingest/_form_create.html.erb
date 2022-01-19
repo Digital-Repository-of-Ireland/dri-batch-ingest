@@ -1,36 +1,30 @@
-<div class="fuelux" style="width:900px">
-  <div class="wizard" data-initialize="wizard" id="ingestWizard">
-    <div class="steps-container">
-        <ul class="steps">
-            <li data-step="1" class="active">
-                <span class="badge">1</span>Collection
-                <span class="chevron"></span>
-            </li>
-            <li data-step="2">
-                <span class="badge">2</span>Metadata
-                <span class="chevron"></span>
-            </li>
-             <li data-step="3">
-                <span class="badge">3</span>Assets
-                <span class="chevron"></span>
-            </li>
-            <li data-step="4">
-                <span class="badge">4</span>Preservation Assets
-                <span class="chevron"></span>
-            </li>
-        </ul>
-    </div>
-    <div class="actions">
-        <button type="button" class="btn btn-secondary btn-prev">
-            <span class="glyphicon glyphicon-arrow-left"></span>Prev</button>
-        <button type="button" class="btn btn-primary btn-next" data-last="Complete">Next
-            <span class="glyphicon glyphicon-arrow-right"></span>
-        </button>
-    </div>
+  <div class="wizard" id="ingestWizard">
+    <ul class="nav">
+      <li>
+        <a class="nav-link" href="#step-1">
+          Collection
+        </a>
+      </li>
+      <li>
+        <a class="nav-link" href="#step-2">
+          Metadata
+        </a>
+      </li>
+      <li>
+        <a class="nav-link" href="#step-3">
+          Assets
+        </a>
+      </li>
+      <li>
+        <a class="nav-link" href="#step-4">
+          Preservation Assets
+        </a>
+      </li>
+    </ul>
 
-    <div class="step-content">
-      <div class="step-pane active alert" data-step="1">
-        <%= form_tag(batch_ingest_path, id: 'main_form', method: 'post') do %>
+    <div class="tab-content">
+      <div id="step-1" class="tab-pane" role="tabpanel">
+        <%= form_tag(batch_ingest_path, id: 'ingest_wizard_form', method: 'post') do %>
           <%= hidden_field_tag 'metadata_path' %>
           <%= hidden_field_tag 'asset_path' %>
           <%= hidden_field_tag 'preservation_path' %>
@@ -40,187 +34,132 @@
           <h4>Collection for ingest</h4>
           <p>Select the collection to ingest to</p>
           <div class="form-group">
-            <ul class="tree tree-folder-select" role="tree" id="collectionSelectable">
-              <li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">
-                <div class="tree-branch-header">
-                  <button type="button" class="glyphicon icon-caret glyphicon-play"><span class="sr-only">Open</span></button>
-                  <button type="button" class="tree-branch-name">
-                    <span class="glyphicon icon-folder glyphicon-folder-close"></span>
-                    <span class="tree-label"></span>
-                  </button>
-                </div>
-                <ul class="tree-branch-children" role="group"></ul>
-                <div class="tree-loader" role="alert">Loading...</div>
-              </li>
-              <li class="tree-item hide" data-template="treeitem" role="treeitem">
-                <button type="button" class="tree-item-name">
-                  <span class="glyphicon icon-item fueluxicon-bullet"></span>
-                  <span class="tree-label"></span>
-                </button>
-              </li>
-            </ul>
+            <div id="collectionsSelectable">
+            </div>
           </div>
       </div>
 
-      <div class="step-pane alert" data-step="2">
+      <div id="step-2" class="tab-pane" role="tabpanel">
           <h4>Select metadata directory</h4>
           <p>This directory should contain the XML metadata files with the file extension <b>.xml</b></p>
 
           <div class="form-group">
-            <ul class="tree tree-folder-select" role="tree" id="metadataSelectableFolder">
-              <li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">
-                <div class="tree-branch-header">
-                  <button type="button" class="glyphicon icon-caret glyphicon-play"><span class="sr-only">Open</span></button>
-                  <button type="button" class="tree-branch-name">
-                    <span class="glyphicon icon-folder glyphicon-folder-close"></span>
-                    <span class="tree-label"></span>
-                  </button>
-                </div>
-                <ul class="tree-branch-children" role="group"></ul>
-                <div class="tree-loader" role="alert">Loading...</div>
-              </li>
-              <li class="tree-item hide" data-template="treeitem" role="treeitem">
-                <button type="button" class="tree-item-name">
-                  <span class="glyphicon icon-item fueluxicon-bullet"></span>
-                  <span class="tree-label"></span>
-                </button>
-              </li>
-            </ul>
+            <div id="metadataSelectableFolder">
+           </div>
           </div>
-        </div>
-        <div class="step-pane alert" data-step="3">
+      </div>
+
+      <div id="step-3" class="tab-pane" role="tabpanel">
             <h4>Select asset directory</h4>
             <p>Asset files for a given object should have the same base filename as the metadata file, for example, the metadata file myobject_1.xml
              corresponds to the asset file myobject_1.pdf. If you have more than one asset file for a given object then an underscore and sequence  number should be appended to the basename, for example:</br>
              <ul><li>myobject_1_001.tiff</li><li>myobject_1_002.tiff</li><li>myobject_1_003.pdf</li></ul>
-           </br>
+             </br>
             </p>
             <div class="form-group">
-              <ul class="tree tree-folder-select" role="tree" id="assetSelectableFolder">
-                <li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">
-                  <div class="tree-branch-header">
-                    <button type="button" class="glyphicon icon-caret glyphicon-play"><span class="sr-only">Open</span></button>
-                    <button type="button" class="tree-branch-name">
-                      <span class="glyphicon icon-folder glyphicon-folder-close"></span>
-                      <span class="tree-label"></span>
-                    </button>
-                  </div>
-                  <ul class="tree-branch-children" role="group"></ul>
-                  <div class="tree-loader" role="alert">Loading...</div>
-                </li>
-                <li class="tree-item hide" data-template="treeitem" role="treeitem">
-                  <button type="button" class="tree-item-name">
-                    <span class="glyphicon icon-item fueluxicon-bullet"></span>
-                    <span class="tree-label"></span>
-                  </button>
-                </li>
-              </ul>
+              <div id="assetSelectableFolder">
+              </div>
             </div>
-        </div>
-        <div class="step-pane alert" data-step="4">
+      </div>
+
+      <div id="step-4" class="tab-pane" role="tabpanel">
             <h4>Select preservation asset directory</h4>
             <p>Preservation files can be added to the object. These files will not have surrogates generated from them and will
               only be displayed to editors or users that have been granted permission.
             </p>
-            <div class="form-group">
-              <ul class="tree tree-folder-select" role="tree" id="preservationSelectableFolder">
-                <li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">
-                  <div class="tree-branch-header">
-                    <button type="button" class="glyphicon icon-caret glyphicon-play"><span class="sr-only">Open</span></button>
-                    <button type="button" class="tree-branch-name">
-                      <span class="glyphicon icon-folder glyphicon-folder-close"></span>
-                      <span class="tree-label"></span>
-                    </button>
-                  </div>
-                  <ul class="tree-branch-children" role="group"></ul>
-                  <div class="tree-loader" role="alert">Loading...</div>
-                </li>
-                <li class="tree-item hide" data-template="treeitem" role="treeitem">
-                  <button type="button" class="tree-item-name">
-                    <span class="glyphicon icon-item fueluxicon-bullet"></span>
-                    <span class="tree-label"></span>
-                  </button>
-                </li>
-              </ul>
+             <div class="form-group">
+               <div id="preservationSelectableFolder">
+               </div>
             </div>
-        </div>
-
-        <% end %> <!-- close form tag -->
       </div>
-  </div>
+
+      <% end %> <!-- close form tag -->
+    </div>
 
   <script>
-    $('#ingestWizard').on('finished.fu.wizard', function (e, data) {
-     if (typeof $('#metadataSelectableFolder').tree('selectedItems')[0] == 'undefined') {
-        alert('You must select a metadata directory.');
-        $('#ingestWizard').wizard('selectedItem', {
-           step: 2
-        });
-      } else {
-        $("#metadata_path").val($('#metadataSelectableFolder').tree('selectedItems')[0].path);
-        $("#ingestWizard #collection_id").val($('#ingestWizard #collectionSelectable').tree('selectedItems')[0].id);
+    $(document).ready(function() {
+      var folders = JSON.parse('<%= raw escape_javascript(@user_dirs.to_json) %>');
+      var collections = JSON.parse('<%= raw escape_javascript(@collections.to_json) %>');
 
-        if (typeof $('#assetSelectableFolder').tree('selectedItems')[0] !== 'undefined') {
-          $("#asset_path").val($('#assetSelectableFolder').tree('selectedItems')[0].path);
+      $("#ingestWizard #collectionsSelectable").jstree({
+        'core' : {
+          'data' : collections,
+          'multiple' : false
         }
+      })
 
-        if (typeof $('#preservationSelectableFolder').tree('selectedItems')[0] !== 'undefined') {
-          $("#preservation_path").val($('#preservationSelectableFolder').tree('selectedItems')[0].path);
+      $("#metadataSelectableFolder").jstree({
+        'core' : {
+          'data' : folders,
+          'multiple' : false
         }
+      })
 
-        $('#main_form').submit();
-      }
-    });
-
-    $('#ingestWizard').on('actionclicked.fu.wizard', function (e, data) {
-      if (data.step === 1 && data.direction === 'next') {
-        if (typeof $('#ingestWizard #collectionSelectable').tree('selectedItems')[0] == 'undefined') {
-          alert('You must select a collection.');
-          return e.preventDefault();
+      $("#assetSelectableFolder").jstree({
+        'core' : {
+          'data' : folders,
+          'multiple' : false
         }
-      } else if(data.step === 2 && data.direction === 'next') {
-        if (typeof $('#ingestWizard #metadataSelectableFolder').tree('selectedItems')[0] == 'undefined') {
+      })
+
+      $("#preservationSelectableFolder").jstree({
+        'core' : {
+          'data' : folders,
+          'multiple' : false
+        }
+      })
+
+      var btnFinish = $('<button id="#submit-wizard"></button>').text('Finish')
+                                             .addClass('btn btn-info')
+                                             .on('click', submitWizard);
+
+      $('#ingestWizard').smartWizard({
+        selected: 0,
+        theme: 'arrows', // default, arrows, dots, progress
+        transition: {
+          animation: 'none', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+        },
+        autoAdjustHeight: false,
+        toolbarSettings: {
+          toolbarExtraButtons: [btnFinish]
+        }
+      });
+
+      $("#ingestWizard").on("leaveStep", function(e, anchorObject, currentStepIndex, nextStepIndex, stepDirection) {
+        if (currentStepIndex == 0 && nextStepIndex == 1) {
+          if ($('#ingestWizard #collectionsSelectable').jstree('get_selected', true).length == 0) {
+            alert('You must select a collection.');
+            return e.preventDefault();
+          }
+        } else if (currentStepIndex == 1 && nextStepIndex == 2 && $('#metadataSelectableFolder').jstree('get_selected', true).length == 0) {
           alert('You must select a metadata directory.');
           return e.preventDefault();
         }
+      });
+
+      function submitWizard() {
+        if ($('#ingestWizard #collectionsSelectable').jstree('get_selected', true).length == 0) {
+            alert('You must select a collection.');
+          $('#ingestWizard').smartWizard("goToStep", 0);
+        }else if ($('#metadataSelectableFolder').jstree('get_selected', true).length == 0) {
+          alert('You must select a metadata directory.');
+          $('#ingestWizard').smartWizard("goToStep", 1);
+        } else {
+          console.log("Submitting");
+          $("#metadata_path").val($('#metadataSelectableFolder').jstree('get_selected', true)[0].data.path);
+          $("#ingestWizard #collection_id").val($('#ingestWizard #collectionsSelectable').jstree('get_selected', true)[0].id);
+
+          if (typeof $('#assetSelectableFolder').jstree('get_selected', true).length > 0) {
+            $("#asset_path").val($('#assetSelectableFolder').jstree('get_selected', true)[0].data.path);
+          }
+
+          if (typeof $('#preservationSelectableFolder').jstree('get_selected', true).length > 0) {
+            $("#preservation_path").val($('#preservationSelectableFolder').jstree('get_selected', true)[0].data.path);
+          }
+
+          $('#ingest_wizard_form').submit();
+        }
       }
+
     });
-
-    var folders = JSON.parse('<%= raw escape_javascript(@user_dirs.to_json) %>');
-    var collections = JSON.parse('<%= raw escape_javascript(@collections.to_json) %>');
-
-    var collectionDataSource = new StaticTreeDataSource(collections, true);
-    var metadataDataSource = new StaticTreeDataSource(folders, true);
-    var assetDataSource = new StaticTreeDataSource(folders, true);
-    var preservationDataSource = new StaticTreeDataSource(folders, true);
-
-    $('#ingestWizard #collectionSelectable').tree({
-      dataSource: collectionDataSource.getData,
-      cacheItems: true,
-      folderSelect: true,
-      multiSelect: false
-    });
-
-    $('#metadataSelectableFolder').tree({
-      dataSource: metadataDataSource.getData,
-      cacheItems: true,
-      folderSelect: true,
-      multiSelect: false
-    });
-
-    $('#assetSelectableFolder').tree({
-      dataSource: assetDataSource.getData,
-      cacheItems: true,
-      folderSelect: true,
-      multiSelect: false
-    });
-
-    $('#preservationSelectableFolder').tree({
-      dataSource: preservationDataSource.getData,
-      cacheItems: true,
-      folderSelect: true,
-      multiSelect: false
-    });
-
   </script>
-<div>

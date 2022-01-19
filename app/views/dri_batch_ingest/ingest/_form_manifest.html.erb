@@ -1,26 +1,19 @@
-<div class="fuelux" style="width:900px">
-  <div class="wizard" data-initialize="wizard" id="ingestManifestWizard">
-    <div class="steps-container">
-        <ul class="steps">
-            <li data-step="1" class="active">
-                <span class="badge">1</span>Collection
-                <span class="chevron"></span>
-            </li>
-            <li data-step="2">
-                <span class="badge">2</span>Manifest
-                <span class="chevron"></span>
-            </li>
-        </ul>
-    </div>
-    <div class="actions">
-        <button type="button" class="btn btn-default btn-prev">
-            <span class="glyphicon glyphicon-arrow-left"></span>Prev</button>
-        <button type="button" class="btn btn-primary btn-next" data-last="Complete">Next
-            <span class="glyphicon glyphicon-arrow-right"></span>
-        </button>
-    </div>
-    <div class="step-content">
-      <div class="step-pane active alert" data-step="1">
+ <div class="wizard" id="ingestManifestWizard">
+    <ul class="nav">
+      <li>
+        <a href="#step-1" class="nav-link">
+          Collection
+        </a>
+      </li>
+      <li>
+        <a href="#step-2" class="nav-link">
+          Manifest
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="step-1" class="tab-pane" role="tabpanel">
         <%= form_tag(batch_ingest_path, id: 'manifest_form', method: 'post') do %>
           <%= hidden_field_tag 'type', 'manifest' %>
           <%= hidden_field_tag 'collection_id' %>
@@ -28,76 +21,71 @@
           <h4>Collection for ingest</h4>
           <p>Select the collection to ingest to</p>
           <div class="form-group">
-            <ul class="tree tree-folder-select" role="tree" id="collectionSelectable">
-              <li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">
-                <div class="tree-branch-header">
-                  <button type="button" class="glyphicon icon-caret glyphicon-play"><span class="sr-only">Open</span></button>
-                  <button type="button" class="tree-branch-name">
-                    <span class="glyphicon icon-folder glyphicon-folder-close"></span>
-                    <span class="tree-label"></span>
-                  </button>
-                </div>
-                <ul class="tree-branch-children" role="group"></ul>
-                <div class="tree-loader" role="alert">Loading...</div>
-              </li>
-              <li class="tree-item hide" data-template="treeitem" role="treeitem">
-                <button type="button" class="tree-item-name">
-                  <span class="glyphicon icon-item fueluxicon-bullet"></span>
-                  <span class="tree-label"></span>
-                </button>
-              </li>
-            </ul>
+            <div id="collectionsSelectable">
+            </div>
           </div>
       </div>
-      <div class="step-pane alert" data-step="2">
+      <div id="step-2" class="tab-pane" role="tabpanel">
           <h4>Select manifest from storage</h4>
 
           <%= button_tag("Browse", type: 'button', class: 'btn btn-large btn-success', id: "browse-btn",
             'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
             'data-target' => '#manifest_form' ) %>
-          
-        <p id="status">0 items selected</p>
-        </div>
-        <% end %>
+
+          <p id="status">0 items selected</p>
       </div>
+      <% end %>
+    </div>
   </div>
 
   <script>
     $(document).ready(function() {
+      var btnFinish = $('<button id="#submit-wizard"></button>').text('Finish')
+                                             .addClass('btn btn-info')
+                                             .on('click', submitManifestWizard);
+
+      $('#ingestManifestWizard').smartWizard({
+        selected: 0,
+        theme: 'arrows', // default, arrows, dots, progress
+        transition: {
+          animation: 'none', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+        },
+        autoAdjustHeight: false,
+        toolbarSettings: {
+          toolbarExtraButtons: [btnFinish]
+        }
+      });
+
+
       $('#browse-btn').browseEverything()
         .done(function(data) { $('#status').html(data.length.toString() + " items selected") })
         .cancel(function()   { window.alert('Cancelled!') });
-    });
-  
-    //buttons
-    $('#ingestManifestWizard').on('finished.fu.wizard', function (e, data) {
-      if (typeof $('#ingestManifestWizard #collectionSelectable').tree('selectedItems')[0] == 'undefined') {
-          alert('You must select a collection.');
-          return e.preventDefault();
-      } else {
-        $('#ingestManifestWizard #collection_id').val($('#ingestManifestWizard #collectionSelectable').tree('selectedItems')[0].id);
-      }
 
-      $('#manifest_form').submit();
-    });
+      $("#ingestManifestWizard").on("leaveStep", function(e, anchorObject, currentStepIndex, nextStepIndex, stepDirection) {
+        if (currentStepIndex == 0 && nextStepIndex == 1) {
+          if ($('#ingestManifestWizard #collectionsSelectable').jstree('get_selected', true).length == 0) {
+            alert('You must select a collection.');
+            return e.preventDefault();
+          }
+        }
+      });
 
-    $('#ingestManifestWizard').on('actionclicked.fu.wizard', function (e, data) {
-      if (data.step === 1 && data.direction === 'next') {
-        if (typeof $('#ingestManifestWizard #collectionSelectable').tree('selectedItems')[0] == 'undefined') {
-          alert('You must select a collection.');
-          return e.preventDefault();
+      var collections = JSON.parse('<%= raw escape_javascript(@collections.to_json) %>');
+      $("#ingestManifestWizard #collectionsSelectable").jstree({
+        'core' : {
+          'data' : collections,
+          'multiple' : false
+        }
+      });
+
+      function submitManifestWizard() {
+        if ($('#ingestManifestWizard #collectionsSelectable').jstree('get_selected', true).length == 0) {
+            alert('You must select a collection.');
+          $('#ingestManifestWizard').smartWizard("goToStep", 0);
+        } else {
+          $("#ingestManifestWizard #collection_id").val($('#ingestManifestWizard #collectionsSelectable').jstree('get_selected', true)[0].id);
+          $('#manifest_form').submit();
         }
       }
     });
-
-    var collections = JSON.parse('<%= raw escape_javascript(@collections.to_json) %>');
-    var collectionDataSource = new StaticTreeDataSource(collections, true);
-
-    $('#ingestManifestWizard #collectionSelectable').tree({
-      dataSource: collectionDataSource.getData,
-      cacheItems: true,
-      folderSelect: true,
-      multiSelect: false
-    });
   </script>
-</div>

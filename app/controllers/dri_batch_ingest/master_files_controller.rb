@@ -21,7 +21,7 @@ class DriBatchIngest::MasterFilesController < ApplicationController
 
   private
 
-    def update_params
-      params.require(:master_file).permit(:status_code, :file_location)
-    end
+  def update_params
+    params.require(:master_file).permit(:status_code, :file_location)
+  end
 end

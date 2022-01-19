@@ -5,7 +5,7 @@ require "tmpdir"
 class DriBatchIngest::CsvCreator
   attr_reader :csv_file
 
-  def initialize(base_dir, user_email, collection, metadata_path, asset_path = nil, preservation_path = nil)
+  def initialize(base_dir, user_email, collection)
     @user_email = user_email
     @base_dir = base_dir
 
@@ -14,68 +14,39 @@ class DriBatchIngest::CsvCreator
     temp_dir = Dir.mktmpdir
     @csv_file = File.join(temp_dir, "#{ingest_name}.csv")
     @header = [ingest_name, @user_email]
-
-    @metadata_path = metadata_path
-    @asset_path = asset_path
-    @preservation_path = preservation_path
   end
 
-  def create
+  def create(metadata_path, asset_path = nil, preservation_path = nil)
     Dir.chdir(@base_dir) do
-      metadata, assets, preservation = files_to_import
+      metadata, assets, preservation = files_to_import(metadata_path, asset_path, preservation_path)
       to_csv(metadata, assets, preservation)
     end
   end
 
-  def files_to_import
+  def files_to_import(metadata_path, asset_path = nil, preservation_path = nil)
     metadata = {}
     assets = {}
     preservation = {}
 
-    asset_row_length = 0
-    preservation_row_length = 0
-
     # Get the metadata
-    Dir.entries(@metadata_path).each do |mfile|
-      next unless File.file?(File.join(@metadata_path, mfile))
-
-      ext = File.extname(mfile)
-      basename = File.basename(mfile, ext)
-      next unless ext == ".xml"
-      metadata[basename.to_sym] = File.join(@metadata_path, mfile)
+    Dir.glob(File.join(metadata_path, '*.xml')).each do |mfile|
+      basename = File.basename(mfile, '.xml').to_sym
+      metadata[basename] = mfile
 
       # Does it have any corresponding data files?
-      unless @asset_path.nil?
-        tmp = Dir.glob(["#{@asset_path}/#{basename}.*", "#{@asset_path}/#{basename}_[0-9]*.*"])
-        if tmp.count.positive?
-          assets[basename.to_sym] = tmp
-          asset_row_length = tmp.length if tmp.length > asset_row_length
-        end
-      end
+      asset_files(assets, asset_path, basename) unless asset_path.nil?
 
       # Does it have any corresponding preservation-only data files?
-      unless @preservation_path.nil?
-        tmp = Dir.glob(["#{@preservation_path}/#{basename}.*", "#{@preservation_path}/#{basename}_[0-9]*.*"])
-        if tmp.count.positive?
-          preservation[basename.to_sym] = tmp
-          preservation_row_length = tmp.length if tmp.length > preservation_row_length
-        end
-      end
+      preservation_files(preservation, preservation_path, basename) unless preservation_path.nil?
     end
 
-    @row_length = asset_row_length + preservation_row_length
     [metadata, assets, preservation]
   end
 
   def to_csv(metadata, assets, preservation)
-    title_row = ['Title', 'Creator', 'Date Issued']
-    (0..@row_length).each do |_i|
-      title_row.concat(['File', 'Label'])
-    end
-
     CSV.open(@csv_file, "w") do |csv|
       csv << @header
-      csv << title_row
+      csv << title_row(max_row_length(assets) + max_row_length(preservation))
 
       metadata.each do |key, m|
         row = [key, @user_email, Time.now, m, 'metadata']
@@ -89,5 +60,33 @@ class DriBatchIngest::CsvCreator
         csv << row
       end
     end
+  end
+
+  def asset_files(assets, asset_path, basename)
+    tmp = find_files(asset_path, basename)
+    assets[basename] = tmp if tmp.count.positive?
+  end
+
+  def preservation_files(preservation, preservation_path, basename)
+    tmp = find_files(preservation_path, basename)
+    preservation[basename] = tmp if tmp.count.positive?
+  end
+
+  def find_files(path_for_files, basename)
+    Dir.glob(["#{path_for_files}/#{basename}.*", "#{path_for_files}/#{basename}_[0-9]*.*"])
+  end
+
+  def title_row(max_row_length)
+    title_row = ['Title', 'Creator', 'Date Issued']
+    (0..max_row_length).each do |_i|
+      title_row.concat(['File', 'Label'])
+    end
+    title_row
+  end
+
+  def max_row_length(files_hash)
+    return 0 if files_hash.blank?
+
+    files_hash.values.max_by(&:length).length
   end
 end

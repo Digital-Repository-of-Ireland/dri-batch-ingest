@@ -10,12 +10,10 @@ describe DriBatchIngest::CsvCreator do
     creator = described_class.new(
       base_dir,
       'user@example.com',
-      'test1',
-      'metadata',
-      'data',
-      'preservation')
+      'test1'
+    )
 
-    creator.create
+    creator.create('metadata', 'data', 'preservation')
     manifest = CSV.read(creator.csv_file)
 
     expect(manifest.length).to eq 4

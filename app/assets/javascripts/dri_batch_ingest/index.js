@@ -11,6 +11,7 @@
 // about supported directives.
 //
 //= require underscore
-//= require fuelux
+//= require jquery-smartwizard/jquery.smartWizard.min
+//= require jstree
 //= require_tree .
 //= require browse_everything
