@@ -110,7 +110,3 @@
       })
     });
   </script>
-
-<% content_for :head do %>
-  <%= javascript_include_tag 'dri_batch_ingest/create_ingest', async: Rails.env.production? %>
-<% end %>

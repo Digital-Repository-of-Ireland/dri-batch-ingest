@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$('#ingestWizard').ready(function() {
   var btnFinish = $('<button id="#submit-wizard"></button>').text('Finish')
                                          .addClass('btn btn-info')
                                          .on('click', submitWizard);
