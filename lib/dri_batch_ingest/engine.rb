@@ -17,6 +17,7 @@ module DriBatchIngest
           app.config.paths["db/migrate"] << expanded_path
         end
       end
+      app.config.assets.precompile << %w[dri_batch_ingest/create_ingest.js dri_batch_ingest/manifest_ingest.js]
     end
   end
 end
