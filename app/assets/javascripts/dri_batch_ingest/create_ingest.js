@@ -38,11 +38,11 @@ $('#ingestWizard').ready(function() {
       $("#metadata_path").val($('#metadataSelectableFolder').jstree('get_selected', true)[0].data.path);
       $("#ingestWizard #collection_id").val($('#ingestWizard #collectionsSelectable').jstree('get_selected', true)[0].id);
 
-      if (typeof $('#assetSelectableFolder').jstree('get_selected', true).length > 0) {
+      if ($('#assetSelectableFolder').jstree('get_selected', true).length > 0) {
         $("#asset_path").val($('#assetSelectableFolder').jstree('get_selected', true)[0].data.path);
       }
 
-      if (typeof $('#preservationSelectableFolder').jstree('get_selected', true).length > 0) {
+      if ($('#preservationSelectableFolder').jstree('get_selected', true).length > 0) {
         $("#preservation_path").val($('#preservationSelectableFolder').jstree('get_selected', true)[0].data.path);
       }
 
