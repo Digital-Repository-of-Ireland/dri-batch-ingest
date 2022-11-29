@@ -75,8 +75,8 @@ class DriBatchIngest::IngestController < ApplicationController
       batches[batch.id] = {
         total: batch.media_objects.count,
         pending: batch.media_objects.excluding_failed.pending.count,
-        completed: batch.media_objects.completed.count,
-        failed: batch.media_objects.failed.count
+        completed: batch.media_objects.status('COMPLETED').count,
+        failed: batch.media_objects.status('FAILED').count
       }
     end
 
