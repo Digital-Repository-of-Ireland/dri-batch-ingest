@@ -1,6 +1,14 @@
-require 'simplecov'
-SimpleCov.start 'rails' do
-  add_filter "/spec/"
+if ENV['RUN_COVERAGE']
+  require 'simplecov'
+
+  SimpleCov.command_name('RSpec')
+  SimpleCov.use_merging(true)
+  SimpleCov.merge_timeout(54400)
+
+  SimpleCov.start 'rails' do
+    add_filter "/spec/"
+    add_filter "/config/"
+  end
 end
 
 require 'spec_helper'

@@ -14,7 +14,7 @@ gemspec
 # gem 'byebug', group: [:development, :test]
 
 gem 'paper_trail'
-gem 'user_group', git: 'ssh://git@tracker.dri.ie:2200/drirepo/dri-user-group.git', branch: 'develop'
+gem 'user_group', git: 'git@github.com:Digital-Repository-of-Ireland/dri-user-group.git', branch: 'main'
 gem 'avalon_ingest', git: 'https://github.com/stkenny/avalon_ingest'
 gem 'jstree-rails-4', git: 'https://github.com/kesha-antonov/jstree-rails-4'
 

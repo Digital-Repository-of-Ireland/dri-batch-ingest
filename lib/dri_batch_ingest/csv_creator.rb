@@ -73,7 +73,7 @@ class DriBatchIngest::CsvCreator
   end
 
   def find_files(path_for_files, basename)
-    Dir.glob(["#{path_for_files}/#{basename}.*", "#{path_for_files}/#{basename}_[0-9]*.*", "#{path_for_files}/#{basename}-[0-9]*.*"])
+    Dir.glob(["#{path_for_files}/#{basename}/*.*", "#{path_for_files}/#{basename}.*", "#{path_for_files}/#{basename}_[0-9]*.*", "#{path_for_files}/#{basename}-[0-9]*.*"])
   end
 
   def title_row(max_row_length)

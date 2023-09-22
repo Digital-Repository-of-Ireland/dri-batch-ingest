@@ -15,10 +15,9 @@ describe DriBatchIngest::CsvCreator do
 
     creator.create('metadata', 'data', 'preservation')
     manifest = CSV.read(creator.csv_file)
-
-    expect(manifest.length).to eq 4
-    expect(manifest[1].length).to eq 9
-    expect(manifest[-2][3..-1]).to contain_exactly(
+    expect(manifest.length).to eq 5
+    expect(manifest[1].length).to eq 11
+    expect(manifest[-3][3..-1]).to contain_exactly(
       "metadata/object1.xml",
       "metadata",
       "data/object1.jpeg",
@@ -26,7 +25,7 @@ describe DriBatchIngest::CsvCreator do
       "preservation/object1.jpeg",
       "preservation"
       )
-    expect(manifest[-1][3..-1]).to contain_exactly(
+    expect(manifest[-2][3..-1]).to contain_exactly(
       "metadata/object2.xml",
       "metadata",
       "data/object2.jpeg",
@@ -34,7 +33,14 @@ describe DriBatchIngest::CsvCreator do
       "preservation/object2.jpeg",
       "preservation"
       )
-
+    expect(manifest[-1][3..-1]).to contain_exactly(
+      "metadata/object3.xml",
+      "metadata",
+      "data/object3/afile.jpeg",
+      "asset",
+      "data/object3/bfile.jpeg",
+      "asset"
+      )
     File.unlink(creator.csv_file)
   end
 end
