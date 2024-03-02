@@ -16,7 +16,6 @@ gemspec
 gem 'paper_trail'
 gem 'user_group', git: 'git@github.com:Digital-Repository-of-Ireland/dri-user-group.git', branch: 'main'
 gem 'avalon_ingest', git: 'https://github.com/stkenny/avalon_ingest'
-gem 'jstree-rails-4', git: 'https://github.com/kesha-antonov/jstree-rails-4'
 
 gem 'simplecov', require: false, group: :test
 gem 'database_cleaner', require: false, group: :test

@@ -12,7 +12,7 @@
 //
 //= require underscore
 //= require jquery-smartwizard/jquery.smartWizard.min
-//= require jstree
+//= require jstree/jstree
 //= require browse_everything
 //= require dri_batch_ingest/create_ingest
 //= require dri_batch_ingest/manifest_ingest

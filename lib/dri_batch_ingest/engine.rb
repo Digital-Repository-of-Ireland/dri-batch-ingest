@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require 'underscore-rails'
-require 'jstree-rails-4'
 require 'browse_everything'
 
 module DriBatchIngest
