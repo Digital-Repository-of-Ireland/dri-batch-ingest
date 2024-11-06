@@ -1,7 +1,7 @@
 # frozen_string_literal: true
-module DriBatchIngest
+module DRIBatchIngest
   class MasterFile < ActiveRecord::Base
-    belongs_to :media_object, class_name: 'DriBatchIngest::MediaObject'
+    belongs_to :media_object, class_name: 'DRIBatchIngest::MediaObject'
 
     END_STATES = %w[CANCELLED COMPLETED FAILED].freeze
 

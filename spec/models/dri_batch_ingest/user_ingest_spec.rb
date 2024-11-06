@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe DriBatchIngest::UserIngest, type: :model do
+describe DRIBatchIngest::UserIngest, type: :model do
 
   let(:user) { FactoryBot.build(:collection_manager) }
 

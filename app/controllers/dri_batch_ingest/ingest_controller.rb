@@ -3,7 +3,7 @@ require 'avalon/batch'
 require 'dri_batch_ingest/processors/entry_processor'
 require 'dri_batch_ingest/csv_creator'
 
-class DriBatchIngest::IngestController < ApplicationController
+class DRIBatchIngest::IngestController < ApplicationController
   before_action :authenticate_user!
   before_action :read_only, except: [:index, :show]
 
@@ -17,7 +17,7 @@ class DriBatchIngest::IngestController < ApplicationController
 
   def new
     @collections = user_collections
-    @ingests = DriBatchIngest::UserIngest.where(user_id: current_user.id).order(created_at: :desc).page(params[:page]).per(5)
+    @ingests = DRIBatchIngest::UserIngest.where(user_id: current_user.id).order(created_at: :desc).page(params[:page]).per(5)
     @batches = user_batches
 
     begin
@@ -28,7 +28,7 @@ class DriBatchIngest::IngestController < ApplicationController
   end
 
   def show
-    @batch = DriBatchIngest::IngestBatch.find(params[:id])
+    @batch = DRIBatchIngest::IngestBatch.find(params[:id])
 
     @media_objects = if params[:status]
                        @batch.media_objects.status(params[:status]).page(params[:page]).per(25)
@@ -39,26 +39,26 @@ class DriBatchIngest::IngestController < ApplicationController
 
   def create
     collection = params[:collection_id]
-    ingest = DriBatchIngest::UserIngest.create(user_id: current_user.id)
+    ingest = DRIBatchIngest::UserIngest.create(user_id: current_user.id)
 
     if params.dig(:type) == 'manifest'
-      Resque.enqueue(DriBatchIngest::ProcessManifest, ingest.id, collection, params['selected_files'], provider_tokens)
+      Resque.enqueue(DRIBatchIngest::ProcessManifest, ingest.id, collection, params['selected_files'], provider_tokens)
     else
       metadata_path = params[:metadata_path]
       asset_path = params[:asset_path]
       preservation_path = params[:preservation_path]
 
-      Resque.enqueue(DriBatchIngest::CreateManifest, ingest.id, base_dir, current_user.email, collection, metadata_path, asset_path, preservation_path)
+      Resque.enqueue(DRIBatchIngest::CreateManifest, ingest.id, base_dir, current_user.email, collection, metadata_path, asset_path, preservation_path)
     end
 
     redirect_to ingests_url(ingest)
   end
 
   def update
-    @batch = DriBatchIngest::IngestBatch.find(params[:id])
+    @batch = DRIBatchIngest::IngestBatch.find(params[:id])
 
     media_object_ids = @batch.media_objects.status('FAILED').pluck(:id)
-    Resque.enqueue(DriBatchIngest::ProcessBatch, @batch.id, media_object_ids)
+    Resque.enqueue(DRIBatchIngest::ProcessBatch, @batch.id, media_object_ids)
 
     redirect_to ingests_url
   end

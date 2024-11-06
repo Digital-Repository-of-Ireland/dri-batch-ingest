@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'csv'
 require 'dri_batch_ingest/csv_creator'
 
-describe DriBatchIngest::CsvCreator do
+describe DRIBatchIngest::CsvCreator do
 
   it 'should create a csv from files' do
     base_dir = File.join(file_fixture_path, 'ingest')

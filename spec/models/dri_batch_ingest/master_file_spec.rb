@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe DriBatchIngest::MasterFile, type: :model do
+describe DRIBatchIngest::MasterFile, type: :model do
 
   describe "Associations" do
     it { should belong_to(:media_object) }
@@ -29,7 +29,7 @@ describe DriBatchIngest::MasterFile, type: :model do
     mf.status_code = 'PENDING'
     expect(mf.finished_processing?).to be false
 
-    DriBatchIngest::MasterFile::END_STATES.each do |e|
+    DRIBatchIngest::MasterFile::END_STATES.each do |e|
       mf.status_code = e
       expect(mf.finished_processing?).to be true
     end

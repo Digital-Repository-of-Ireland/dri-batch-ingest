@@ -1,4 +1,4 @@
 Rails.application.routes.draw do
 
-  mount DriBatchIngest::Engine => "/dri_batch_ingest"
+  mount DRIBatchIngest::Engine => "/dri_batch_ingest"
 end

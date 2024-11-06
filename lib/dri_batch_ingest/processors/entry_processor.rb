@@ -2,15 +2,15 @@
 require 'avalon/batch'
 require 'json'
 
-module DriBatchIngest
+module DRIBatchIngest
   module Processors
     class EntryProcessor < Avalon::Batch::Entry
       def media_object
-        @media_object ||= DriBatchIngest::MediaObject.new(collection: @manifest.package.collection)
+        @media_object ||= DRIBatchIngest::MediaObject.new(collection: @manifest.package.collection)
       end
 
       def process!(opts = {})
-        batch = DriBatchIngest::IngestBatch.find(opts['batch'])
+        batch = DRIBatchIngest::IngestBatch.find(opts['batch'])
         user = UserGroup::User.find(batch.user_ingest.user_id)
 
         media_object.ingest_batch = batch
@@ -31,7 +31,7 @@ module DriBatchIngest
       private
 
       def create_master_file(file_spec)
-        master_file = DriBatchIngest::MasterFile.new
+        master_file = DRIBatchIngest::MasterFile.new
         master_file.media_object = media_object
         master_file.metadata = true if file_spec.key?(:label) && file_spec[:label] == 'metadata'
         master_file.preservation = true if file_spec.key?(:label) && file_spec[:label] == 'preservation'

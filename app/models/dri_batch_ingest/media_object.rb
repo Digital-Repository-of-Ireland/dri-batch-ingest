@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-module DriBatchIngest
+module DRIBatchIngest
   class MediaObject < ActiveRecord::Base
-    belongs_to :ingest_batch, class_name: 'DriBatchIngest::IngestBatch'
-    has_many :parts, class_name: 'DriBatchIngest::MasterFile'
+    belongs_to :ingest_batch, class_name: 'DRIBatchIngest::IngestBatch'
+    has_many :parts, class_name: 'DRIBatchIngest::MasterFile'
 
     scope :status, lambda { |status|
       joins(:parts).where('dri_batch_ingest_master_files.status_code' => status).distinct
@@ -10,11 +10,11 @@ module DriBatchIngest
 
     scope :pending, -> { joins(:parts).where('dri_batch_ingest_master_files.status_code' => 'PENDING').distinct }
 
-    scope :excluding_failed, -> { where(['dri_batch_ingest_media_objects.id NOT IN (?)', DriBatchIngest::MediaObject.status('FAILED').pluck(:id)]) if failed.any? }
+    scope :excluding_failed, -> { where(['dri_batch_ingest_media_objects.id NOT IN (?)', DRIBatchIngest::MediaObject.status('FAILED').pluck(:id)]) if failed.any? }
 
-    scope :failed, -> { DriBatchIngest::MediaObject.status('FAILED') }
+    scope :failed, -> { DRIBatchIngest::MediaObject.status('FAILED') }
 
-    scope :completed, -> { DriBatchIngest::MediaObject.status('COMPLETED') }
+    scope :completed, -> { DRIBatchIngest::MediaObject.status('COMPLETED') }
 
     def destroy
       parts.each(&:destroy)

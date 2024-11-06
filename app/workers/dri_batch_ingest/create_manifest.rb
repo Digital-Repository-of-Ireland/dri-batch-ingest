@@ -3,11 +3,11 @@ require 'dri_batch_ingest/csv_creator'
 require 'avalon/batch'
 require 'dri_batch_ingest/processors'
 
-class DriBatchIngest::CreateManifest
+class DRIBatchIngest::CreateManifest
   @queue = :create_manifest
 
   def self.perform(ingest_id, base_dir, email, collection, metadata_path, asset_path, preservation_path)
-    creator = DriBatchIngest::CsvCreator.new(
+    creator = DRIBatchIngest::CsvCreator.new(
       base_dir,
       email,
       collection
@@ -17,11 +17,11 @@ class DriBatchIngest::CreateManifest
     package = Avalon::Batch::Package.new(
       creator.csv_file,
       collection,
-      DriBatchIngest::Processors::EntryProcessor
+      DRIBatchIngest::Processors::EntryProcessor
     )
 
-    ingest = DriBatchIngest::UserIngest.find(ingest_id)
-    batch = DriBatchIngest::IngestBatch.create(
+    ingest = DRIBatchIngest::UserIngest.find(ingest_id)
+    batch = DRIBatchIngest::IngestBatch.create(
       collection_id: collection,
       email: package.manifest.email,
       user_ingest_id: ingest.id
@@ -35,7 +35,7 @@ class DriBatchIngest::CreateManifest
 
     ingest.batches << batch
 
-    Resque.enqueue(DriBatchIngest::ProcessBatch, batch.id)
+    Resque.enqueue(DRIBatchIngest::ProcessBatch, batch.id)
     ingest.save
   end
 end

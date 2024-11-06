@@ -8,7 +8,7 @@ require "dri_batch_ingest/version"
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "dri_batch_ingest"
-  s.version     = DriBatchIngest::VERSION
+  s.version     = DRIBatchIngest::VERSION
   s.authors     = ["Stuart Kenny"]
   s.email       = ["skenny@tchpc.tcd.ie"]
   s.homepage    = "https://github.com/Digital-Repository-of-Ireland/dri_batch_ingest"

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-module DriBatchIngest
+module DRIBatchIngest
   class IngestBatch < ActiveRecord::Base
-    belongs_to :user_ingest, class_name: 'DriBatchIngest::UserIngest'
-    has_many :media_objects, class_name: 'DriBatchIngest::MediaObject'
+    belongs_to :user_ingest, class_name: 'DRIBatchIngest::UserIngest'
+    has_many :media_objects, class_name: 'DRIBatchIngest::MediaObject'
 
     def finished?
       media_objects.all?(&:finished_processing?)

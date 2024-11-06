@@ -1,10 +1,10 @@
 require 'rails_helper'
 require 'resque'
 
-describe DriBatchIngest::CreateManifest do
+describe DRIBatchIngest::CreateManifest do
 
   let(:user) { FactoryBot.create(:collection_manager) }
-  let(:user_ingest) { DriBatchIngest::UserIngest.new }
+  let(:user_ingest) { DRIBatchIngest::UserIngest.new }
 
   it 'should create manifest and start process batch' do
     user_ingest.user_id = user.id

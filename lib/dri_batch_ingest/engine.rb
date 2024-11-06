@@ -3,9 +3,9 @@ require 'underscore-rails'
 require 'jstree-rails-4'
 require 'browse_everything'
 
-module DriBatchIngest
+module DRIBatchIngest
   class Engine < ::Rails::Engine
-    isolate_namespace DriBatchIngest
+    isolate_namespace DRIBatchIngest
 
     config.generators do |g|
       g.test_framework :rspec

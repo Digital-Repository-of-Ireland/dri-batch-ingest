@@ -1,4 +1,4 @@
-DriBatchIngest::Engine.routes.draw do
+DRIBatchIngest::Engine.routes.draw do
 
   get '/', to: "ingest#new"
 

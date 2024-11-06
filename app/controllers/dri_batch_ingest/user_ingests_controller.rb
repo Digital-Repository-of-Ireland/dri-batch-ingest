@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-class DriBatchIngest::UserIngestsController < ApplicationController
+class DRIBatchIngest::UserIngestsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @ingests = DriBatchIngest::UserIngest.where(user_id: current_user.id).order(created_at: :desc).page(params[:page]).per(10)
+    @ingests = DRIBatchIngest::UserIngest.where(user_id: current_user.id).order(created_at: :desc).page(params[:page]).per(10)
     @batches = user_batches
   end
 

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class DriBatchIngest::MasterFilesController < ApplicationController
+class DRIBatchIngest::MasterFilesController < ApplicationController
   before_action :authenticate_user_from_token!
   before_action :authenticate_user!
 
@@ -10,7 +10,7 @@ class DriBatchIngest::MasterFilesController < ApplicationController
       params[:master_file][:file_location] = location
     end
 
-    master_file = DriBatchIngest::MasterFile.find(params[:file_id])
+    master_file = DRIBatchIngest::MasterFile.find(params[:file_id])
     master_file.update_attributes(update_params)
     master_file.save
 

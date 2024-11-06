@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module DriBatchIngest
+module DRIBatchIngest
   module ApplicationHelper
   end
 end

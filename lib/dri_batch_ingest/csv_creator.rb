@@ -2,7 +2,7 @@
 require "csv"
 require "tmpdir"
 
-class DriBatchIngest::CsvCreator
+class DRIBatchIngest::CsvCreator
   attr_reader :csv_file
 
   def initialize(base_dir, user_email, collection)

@@ -2,12 +2,12 @@
 require 'avalon/batch'
 require 'dri_batch_ingest/processors'
 
-class DriBatchIngest::ProcessManifest
+class DRIBatchIngest::ProcessManifest
   @queue = :process_manifest
 
   def self.perform(ingest_id, collection, selected_files, provider_tokens)
     retriever = BrowseEverything::Retriever.new
-    ingest = DriBatchIngest::UserIngest.find(ingest_id)
+    ingest = DRIBatchIngest::UserIngest.find(ingest_id)
 
     FileUtils.mkdir_p(File.join(Settings.downloads.directory, collection))
 
@@ -18,10 +18,10 @@ class DriBatchIngest::ProcessManifest
       package = Avalon::Batch::Package.new(
         manifest,
         collection,
-        DriBatchIngest::Processors::EntryProcessor
+        DRIBatchIngest::Processors::EntryProcessor
       )
 
-      batch = DriBatchIngest::IngestBatch.create(collection_id: collection, email: package.manifest.email, user_ingest_id: ingest.id)
+      batch = DRIBatchIngest::IngestBatch.create(collection_id: collection, email: package.manifest.email, user_ingest_id: ingest.id)
 
       package.process!(
         'batch' => batch.id,
@@ -31,7 +31,7 @@ class DriBatchIngest::ProcessManifest
 
       ingest.batches << batch
 
-      Resque.enqueue(DriBatchIngest::ProcessBatch, batch.id)
+      Resque.enqueue(DRIBatchIngest::ProcessBatch, batch.id)
     end
 
     ingest.save

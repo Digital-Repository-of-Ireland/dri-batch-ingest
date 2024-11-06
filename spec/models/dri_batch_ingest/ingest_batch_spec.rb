@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe DriBatchIngest::IngestBatch, type: :model do
+describe DRIBatchIngest::IngestBatch, type: :model do
 
   describe "Associations" do
     it { should belong_to(:user_ingest) }
@@ -10,12 +10,12 @@ describe DriBatchIngest::IngestBatch, type: :model do
   describe 'methods' do
 
     before(:each) do
-      mf = DriBatchIngest::MasterFile.new
-      @mf2 = DriBatchIngest::MasterFile.new
+      mf = DRIBatchIngest::MasterFile.new
+      @mf2 = DRIBatchIngest::MasterFile.new
       mf.status_code = 'COMPLETED'
       @mf2.status_code = 'PENDING'
 
-      @mo = DriBatchIngest::MediaObject.create
+      @mo = DRIBatchIngest::MediaObject.create
       @mo.parts << mf
       @mo.parts << @mf2
     end

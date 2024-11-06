@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 require 'filesize'
 
-class DriBatchIngest::MediaObjectsController < ApplicationController
+class DRIBatchIngest::MediaObjectsController < ApplicationController
   before_action :authenticate_user_from_token!
   before_action :authenticate_user!
 
   def show
-    @batch = DriBatchIngest::IngestBatch.find(params[:id])
-    @media_object = DriBatchIngest::MediaObject.find(params[:media_id])
+    @batch = DRIBatchIngest::IngestBatch.find(params[:id])
+    @media_object = DRIBatchIngest::MediaObject.find(params[:media_id])
 
     @files = @media_object.parts.page params[:page]
 

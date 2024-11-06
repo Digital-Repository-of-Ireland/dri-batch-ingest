@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'dri_batch_ingest/processors'
 
-describe DriBatchIngest::Processors::EntryProcessor do
+describe DRIBatchIngest::Processors::EntryProcessor do
 
   describe 'process' do
 
@@ -17,8 +17,8 @@ describe DriBatchIngest::Processors::EntryProcessor do
     }
 
     let(:user) { FactoryBot.build(:collection_manager) }
-    let(:user_ingest) { DriBatchIngest::UserIngest.new }
-    let(:ingest_batch) { DriBatchIngest::IngestBatch.new }
+    let(:user_ingest) { DRIBatchIngest::UserIngest.new }
+    let(:ingest_batch) { DRIBatchIngest::IngestBatch.new }
 
     it 'should process an entry' do
       user_ingest.user = user
@@ -34,7 +34,7 @@ describe DriBatchIngest::Processors::EntryProcessor do
       processor = described_class.new({}, files, {}, 1, dummy_manifest.new)
       expect {
         processor.process!('batch' => ingest_batch.id, 'provider' => 'sandbox_file_system')
-      }.to change { DriBatchIngest::MediaObject.count }.by(1)
+      }.to change { DRIBatchIngest::MediaObject.count }.by(1)
 
       expect(ingest_batch.media_objects.count).to eq 1
       expect(ingest_batch.media_objects.first.parts.count).to eq 2

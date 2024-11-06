@@ -1,4 +1,4 @@
 # frozen_string_literal: true
-module DriBatchIngest
+module DRIBatchIngest
   VERSION = "1.3.2"
 end

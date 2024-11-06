@@ -2,18 +2,18 @@
 require 'avalon/batch'
 require 'rest-client'
 
-class DriBatchIngest::ProcessBatch
+class DRIBatchIngest::ProcessBatch
   @queue = :process_batch
 
   def self.perform(batch_id, media_object_ids = nil)
-    batch = DriBatchIngest::IngestBatch.find(batch_id)
+    batch = DRIBatchIngest::IngestBatch.find(batch_id)
     user = UserGroup::User.find(batch.user_ingest.user_id)
     collection_id = batch.collection_id
 
     media_objects = media_object_ids || batch.media_objects
 
     media_objects.each do |mo|
-      media_object = mo.is_a?(DriBatchIngest::MediaObject) ? mo : DriBatchIngest::MediaObject.find(mo)
+      media_object = mo.is_a?(DRIBatchIngest::MediaObject) ? mo : DRIBatchIngest::MediaObject.find(mo)
       ingest_message = process_media_object(media_object, collection_id)
 
       Resque.enqueue(::ProcessBatchIngest, user.id, collection_id, ingest_message.to_json)
