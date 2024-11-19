@@ -28,7 +28,7 @@ describe DRIBatchIngest::ProcessBatch do
 
     package.process!(
       'batch' => batch.id,
-      'provider' => 'sandbox_file_system',
+      'provider' => 'file_system',
       'file_system_token' => nil
     )
 

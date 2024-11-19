@@ -1,3 +1,2 @@
-sandbox_file_system:
+file_system:
    home: /tmp
-   sandbox_template: '{current_user}/files'

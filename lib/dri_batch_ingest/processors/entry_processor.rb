@@ -59,8 +59,12 @@ module DRIBatchIngest
         browser.providers.values.each do |p|
           p.token = opts["#{p.key}_token"]
         end
-        file_path = File.join(browser.providers['sandbox_file_system'].home, file_path) if opts['provider'] == 'sandbox_file_system'
-        browser.providers[opts['provider']].link_for(file_path.to_s)
+        if opts['provider'] == 'sandbox_file_system' && browser.providers['sandbox_file_system']&.home
+          file_path = File.join(browser.providers['sandbox_file_system'].home, file_path)
+          browser.providers[opts['provider']].link_for(file_path.to_s)
+        else
+          browser.providers['file_system'].link_for(file_path.to_s)
+        end
       end
     end
   end

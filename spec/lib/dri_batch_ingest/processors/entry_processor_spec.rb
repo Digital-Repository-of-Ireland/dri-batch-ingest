@@ -33,7 +33,7 @@ describe DRIBatchIngest::Processors::EntryProcessor do
 
       processor = described_class.new({}, files, {}, 1, dummy_manifest.new)
       expect {
-        processor.process!('batch' => ingest_batch.id, 'provider' => 'sandbox_file_system')
+        processor.process!('batch' => ingest_batch.id, 'provider' => 'file_system')
       }.to change { DRIBatchIngest::MediaObject.count }.by(1)
 
       expect(ingest_batch.media_objects.count).to eq 1
